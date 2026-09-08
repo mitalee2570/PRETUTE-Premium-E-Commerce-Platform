@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>PRETUTE - Feature Changes & Implementation Report</title>
+<style>
+    @page {
+        size: A4;
+        margin: 14mm 12mm 14mm 12mm;
+    }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1E293B;
+        background-color: #FFFFFF;
+        line-height: 1.5;
+        font-size: 11pt;
+    }
+    .header {
+        border-bottom: 2.5px solid #0F172A;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+    }
+    .brand-title {
+        font-size: 22pt;
+        font-weight: 800;
+        color: #0F172A;
+        letter-spacing: 0.5px;
+    }
+    .brand-title span {
+        color: #FF5B7F;
+    }
+    .subtitle {
+        font-size: 11pt;
+        color: #64748B;
+        font-weight: 600;
+        margin-top: 2px;
+    }
+    .report-meta {
+        text-align: right;
+        font-size: 9pt;
+        color: #64748B;
+    }
+    .report-meta strong {
+        color: #0F172A;
+    }
+
+    .notice-box {
+        background: linear-gradient(135deg, #FFF0F2 0%, #FFE4E8 100%);
+        border-left: 4px solid #FF5B7F;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin-bottom: 16px;
+        font-size: 10pt;
+    }
+    .notice-box strong {
+        color: #9B1C1C;
+    }
+
+    h2 {
+        font-size: 14pt;
+        color: #0F172A;
+        border-bottom: 1.5px solid #E2E8F0;
+        padding-bottom: 4px;
+        margin-top: 18px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    h3 {
+        font-size: 11.5pt;
+        color: #0F172A;
+        margin-top: 12px;
+        margin-bottom: 6px;
+    }
+
+    p {
+        margin-bottom: 8px;
+        font-size: 10pt;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8px;
+        margin-bottom: 14px;
+        font-size: 9.5pt;
+    }
+    th, td {
+        border: 1px solid #CBD5E1;
+        padding: 7px 10px;
+        text-align: left;
+        vertical-align: top;
+    }
+    th {
+        background-color: #0F172A;
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 9pt;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    tr:nth-child(even) {
+        background-color: #F8FAFC;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 12px;
+        font-size: 8pt;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .badge-active { background-color: #DEF7EC; color: #03543F; }
+    .badge-out { background-color: #FDE8E8; color: #9B1C1C; }
+    .badge-deactivated { background-color: #F1F5F9; color: #475569; }
+    .badge-expired { background-color: #FEE2E2; color: #B91C1C; }
+    .badge-backorder { background-color: #FEF3C7; color: #92400E; }
+    .badge-new { background-color: #E0E7FF; color: #3730A3; }
+
+    .file-card {
+        border: 1px solid #E2E8F0;
+        border-radius: 6px;
+        margin-bottom: 14px;
+        page-break-inside: avoid;
+        overflow: hidden;
+    }
+    .file-header {
+        background-color: #F1F5F9;
+        padding: 7px 12px;
+        border-bottom: 1px solid #E2E8F0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .file-name {
+        font-family: monospace;
+        font-weight: 700;
+        font-size: 10.5pt;
+        color: #0F172A;
+    }
+    .file-tag {
+        font-size: 8pt;
+        font-weight: 700;
+        color: #475569;
+        background: #E2E8F0;
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+    .file-body {
+        padding: 10px 12px;
+        font-size: 9.5pt;
+    }
+    .file-body ul {
+        margin-left: 16px;
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+    .file-body li {
+        margin-bottom: 4px;
+    }
+
+    .hinglish-box {
+        background-color: #F8FAFC;
+        border-left: 3.5px solid #0F172A;
+        padding: 8px 12px;
+        margin: 8px 0;
+        border-radius: 0 4px 4px 0;
+        font-size: 9.5pt;
+    }
+    .hinglish-box strong {
+        color: #0F172A;
+    }
+
+    .demo-step {
+        background-color: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        border-left: 4px solid #FF5B7F;
+        border-radius: 4px;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        page-break-inside: avoid;
+    }
+    .demo-step-num {
+        font-weight: 800;
+        color: #FF5B7F;
+        font-size: 10.5pt;
+    }
+
+    .page-break {
+        page-break-before: always;
+    }
+
+    .footer-text {
+        text-align: center;
+        font-size: 8pt;
+        color: #94A3B8;
+        margin-top: 20px;
+        border-top: 1px solid #E2E8F0;
+        padding-top: 8px;
+    }
+</style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div>
+            <div class="brand-title">PRETUTE<span>.</span></div>
+            <div class="subtitle">Complete Feature Implementation & File-by-File Changes Report</div>
+        </div>
+        <div class="report-meta">
+            <div><strong>Client / Project:</strong> Ashok Sir Pretute E-Commerce</div>
+            <div><strong>Date:</strong> 08 September 2026</div>
+            <div><strong>Status:</strong> <span class="badge badge-active">100% Completed & Verified</span></div>
+        </div>
+    </div>
+
+    <!-- Executive Summary Box -->
+    <div class="notice-box">
+        <strong>Ashok Sir ke Instructions ka Summary:</strong>
+        <ol style="margin-left: 18px; margin-top: 4px;">
+            <li>Admin panel me <strong>Homepage Banners</strong> ka alag option side navigation me add karna.</li>
+            <li>Product ke andar click karne ke baad <strong>Stock Status</strong> (In Stock / Out of Stock / Backorder), <strong>Stock Quantity</strong>, <strong>Availability</strong> (Available / Unavailable), aur <strong>Product Status</strong> (Active / Deactivated) ke options dena.</li>
+            <li>Same options <strong>Category</strong> me bhi dena (Active / Deactivated, Available / Unavailable, Homepage pe dikhana ya nahi).</li>
+            <li><strong>Coupon</strong> me <strong>Valid Till / Expiry Date</strong>, Active / Deactivated / Expired status, aur storefront checkout pe expired coupon reject karne ka feature add karna.</li>
+        </ol>
+    </div>
+
+    <h2>1. Kis File Me Kya Changes Huye H (File-by-File Breakdown)</h2>
+    <p>Har file me jo bhi naya code, naye components ya features add kiye gaye hain, unka complete vivaran niche diya gaya hai:</p>
+
+    <!-- 1. store-data.js -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">1. store-data.js</span>
+            <span class="file-tag">Database & Data Layer</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>STORAGE_KEYS.BANNERS ("pretute_db_banners"):</strong> Naya storage key banaya gaya taaki homepage sliders ka data localStorage me permanently save ho sake.</li>
+                <li><strong>DEFAULT_BANNERS Array:</strong> 3 seed hero slides banayi gayi jisme <em>headline, subtitle, order, active status, image, buttons (text aur link), aur description</em> store hota hai.</li>
+                <li><strong>Banners CRUD Functions:</strong>
+                    <code>StoreData.getBanners()</code>, <code>StoreData.getBannerById(id)</code>, <code>StoreData.saveBanner(data)</code>, <code>StoreData.deleteBanner(id)</code>, aur <code>StoreData.toggleBannerStatus(id)</code> add kiya gaya.
+                </li>
+                <li><strong>Product Inventory Fields:</strong> <code>StoreData.getProducts()</code> aur <code>saveProduct()</code> me <code>stockStatus</code> ("in_stock", "out_of_stock", "on_backorder"), <code>availability</code> ("available", "unavailable"), aur <code>status</code> ("active", "deactivated") ko support aur normalize kiya gaya.</li>
+                <li><strong>Category Attributes:</strong> <code>StoreData.getCategories()</code> aur <code>saveCategory()</code> me <code>status</code>, <code>availability</code>, aur <code>showOnHome</code> boolean flag add kiya gaya.</li>
+                <li><strong>Coupon Expiry Engine:</strong> <code>StoreData.getCoupons()</code> me real-time date check lagaya gaya — agar coupon ki <code>expiryDate</code> aaj ki date se pehle ki hai toh automatically <code>status = "expired"</code> aur <code>isExpired = true</code> mark ho jata hai. Seed data me <code>EXPIRED50</code> coupon testing ke liye add kiya gaya.</li>
+                <li><strong>Quick Toggle Helpers:</strong> <code>toggleProductStatus()</code>, <code>toggleProductStock()</code>, <code>toggleCategoryStatus()</code>, <code>toggleCouponStatus()</code> add kiye gaye.</li>
+            </ul>
+            <div class="hinglish-box">
+                <strong>Sir ko kya batana hai:</strong> "Sir, <code>store-data.js</code> hamari main database file hai. Isme humne Banners ka pura data storage system banaya, Products me stock aur visibility ke new fields dale, Categories me active/deactive aur coupons me automatic expiry date check engine set kar diya hai."
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. admin.html -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">2. admin.html</span>
+            <span class="file-tag">Admin UI / Markup</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>Sidebar "Homepage Banners" Option:</strong> Left sidebar menu me dashboard ke theek niche <em>Homepage Banners</em> button add kiya gaya with image icon aur live count badge <code>#sidebarBannerCount</code>.</li>
+                <li><strong>Banners Management View (<code>#view-banners</code>):</strong> Table add ki gayi jisme Preview Thumbnail, Order No, Headline/Subtitle, Buttons, Status Badge (Active/Deactivated), aur Actions (Edit, Toggle, Delete) hain, sath me upar <code>+ Add New Banner</code> button diya hai.</li>
+                <li><strong>Products Table Enhancements:</strong>
+                    <ul>
+                        <li>Table header me 3 naye columns add kiye: <strong>Stock & Qty</strong>, <strong>Availability</strong>, aur <strong>Status</strong>.</li>
+                        <li>Filter bar me <strong>Stock Filter</strong> (In Stock, Out of Stock, On Backorder) aur <strong>Visibility Filter</strong> (Active, Deactivated) add kiye.</li>
+                    </ul>
+                </li>
+                <li><strong>Product Edit/Add Modal:</strong> WordPress/WooCommerce style 4 new inputs add kiye:
+                    <code>prodStockStatus</code> (In Stock / Out of Stock / On Backorder), <code>prodStock</code> (numeric count), <code>prodAvailability</code> (Available / Unavailable), aur <code>prodStatus</code> (Active / Deactivated).
+                </li>
+                <li><strong>Category Modal:</strong> <code>catStatus</code> (Active/Deactivated), <code>catAvailability</code>, aur <code>catShowOnHome</code> (Show in quick scroll strip checkbox) add kiya gaya.</li>
+                <li><strong>Coupon Modal & Table:</strong> <code>couponExpiryDate</code> (date picker), <code>couponStatus</code>, aur <code>couponUsageLimit</code> add kiya; table me <strong>Valid Till / Expiry</strong> column aur Status column add kiya.</li>
+                <li><strong>Banner Modal (<code>#bannerModalOverlay</code>):</strong> Naya popup modal banaya gaya jisme headline, subtitle, sequence order, image presets, local device image upload, aur button labels/links configure hote hain.</li>
+            </ul>
+            <div class="hinglish-box">
+                <strong>Sir ko kya batana hai:</strong> "Sir, <code>admin.html</code> me sidebar me Homepage Banners ka menu button add ho gaya hai, banner add/edit karne ka modal ban gaya hai, aur product popup me stock, out of stock, available, unavailable, deactivate ke drop-downs add kar diye gaye hain."
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. admin.css -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">3. admin.css</span>
+            <span class="file-tag">Admin Styling</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>Status Badges:</strong> <code>.status-badge.active</code> (Green), <code>.status-badge.deactivated</code> (Slate Grey), <code>.status-badge.available</code> (Teal), <code>.status-badge.unavailable</code> (Slate), <code>.status-badge.expired</code> (Red) design kiye.</li>
+                <li><strong>Stock Badges:</strong> <code>.stock-badge.instock</code>, <code>.stock-badge.outofstock</code>, <code>.stock-badge.backorder</code> (Amber).</li>
+                <li><strong>Interactive Toggle Buttons:</strong> <code>.icon-action-btn.toggle-active</code>, <code>.icon-action-btn.toggle-deactivated</code>, aur <code>.icon-action-btn.stock-toggle</code> add kiye jisse table ke andar se hi 1-click me product ya coupon on/off ho sake.</li>
+                <li><strong>Banner UI Elements:</strong> <code>.banner-cell-preview</code> (16:9 rounded image preview) aur <code>.banner-order-pill</code> (order number badge) add kiya.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- 4. admin.js -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">4. admin.js</span>
+            <span class="file-tag">Admin Logic & Controller</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>Tab Switching & Counter:</strong> <code>switchTab("banners")</code> aur <code>updateSidebarCounters()</code> ko update kiya taaki sidebar me banner count live update ho sake.</li>
+                <li><strong><code>renderBanners()</code> Function:</strong> LocalStorage se banners nikal kar table me render karta hai, active/deactivated badge dikhata hai aur sequence order maintain karta hai.</li>
+                <li><strong>Banner Modal Logic:</strong> <code>openAddBannerModal()</code>, <code>openEditBannerModal(id)</code>, <code>closeBannerModal()</code>, <code>handleBannerFormSubmit()</code>, <code>deleteBanner(id)</code>, aur <code>toggleBannerStatus(id)</code> implement kiye.</li>
+                <li><strong>Local Device Image Upload for Banners:</strong> Computer se photo upload karne par FileReader ke zariye base64 me convert karke live preview dikhata hai aur save karta hai.</li>
+                <li><strong><code>renderProducts()</code> Filters:</strong> Search ke sath-sath <em>Stock Status</em> filter aur <em>Product Status</em> filter ko active kiya. Table rows me status ke anusaar dim opacity styling aur inline 1-click toggles jode.</li>
+                <li><strong>Product Modal Handlers:</strong> <code>openEditProductModal()</code> me product ka stockStatus, availability aur status populate hota hai aur <code>handleProductFormSubmit()</code> me save hota hai.</li>
+                <li><strong>Quick Toggles:</strong> <code>toggleProductStatus(id)</code>, <code>toggleProductStock(id)</code>, <code>toggleCategoryStatus(id)</code>, aur <code>toggleCouponStatus(code)</code> add kiye.</li>
+                <li><strong>Coupon Expiry Display:</strong> <code>renderCoupons()</code> me expired coupons ko Red badge aur "Date Passed" tag ke sath display kiya.</li>
+                <li><strong>Window.AdminApp:</strong> Sabhi naye methods ko globally expose kiya taaki HTML buttons se bina error call ho sakein.</li>
+            </ul>
+            <div class="hinglish-box">
+                <strong>Sir ko kya batana hai:</strong> "Sir, <code>admin.js</code> me humne saara logic likha hai — banners ko add/edit/delete karna, file upload karna, products ko directly 1-click me Active se Deactivate ya In-Stock se Out-of-Stock switch karna, aur coupons ko manage karna."
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. index.html -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">5. index.html</span>
+            <span class="file-tag">Storefront Markup</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>Hero Carousel Slider (<code>#carouselSlider</code> & <code>#carouselDots</code>):</strong> Dynamic injection support ke liye container ko ready kiya gaya jisme JavaScript ke zariye live banners display hote hain.</li>
+                <li><strong>Product Details Page:</strong> Rating box aur Price box ke beech naya container <code>&lt;div id="detailStockAvailability" class="stock-availability-pill in-stock"&gt;</code> add kiya gaya jo live stock count aur availability pill dikhata hai.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 6. style.css -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">6. style.css</span>
+            <span class="file-tag">Storefront Styling</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong>Product Badges:</strong> <code>.card-badge.out-of-stock</code> (Red), <code>.card-badge.unavailable</code> (Slate), <code>.card-badge.backorder</code> (Amber).</li>
+                <li><strong>Stock Image Filter:</strong> <code>.product-card.is-out-of-stock</code> aur <code>.product-card.is-unavailable</code> hone par product image 40% grayscale aur subtle dim ho jati hai taaki customer ko dur se hi samajh aaye ki item available nahi hai.</li>
+                <li><strong>Disabled Buttons:</strong> <code>.btn-add-cart-circle:disabled</code>, <code>.btn:disabled</code> ko grey background, no shadow, aur <code>cursor: not-allowed</code> styling di gayi.</li>
+                <li><strong>Stock Pills for Details View:</strong> <code>.stock-availability-pill.in-stock</code>, <code>.stock-availability-pill.out-of-stock</code>, <code>.stock-availability-pill.unavailable</code>, <code>.stock-availability-pill.backorder</code>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 7. app.js -->
+    <div class="file-card">
+        <div class="file-header">
+            <span class="file-name">7. app.js</span>
+            <span class="file-tag">Storefront Engine & Sync</span>
+        </div>
+        <div class="file-body">
+            <ul>
+                <li><strong><code>renderHeroBanners()</code> Function:</strong> <code>StoreData.getBanners()</code> se live active banners ko load karke storefront ke main hero slider me render karta hai. Agar admin ne order badla ya naya banner add kiya, toh bina page reload kiye turant reflect ho jata hai.</li>
+                <li><strong>Deactivated Products Protection:</strong>
+                    <code>renderHomeProducts()</code>, <code>renderCategoryView()</code>, <code>handleSearchQuery()</code>, aur <code>searchSuggestions</code> — sabhi jagah se <code>status === "deactivated"</code> wale products ko hide kar diya gaya hai. Agar koi direct URL <code>#product/1</code> khole jo deactivated hai, toh alert dekar homepage par redirect kar deta hai.
+                </li>
+                <li><strong>Out-of-Stock & Unavailable Enforcement:</strong>
+                    <code>createProductCard()</code>, <code>renderProductDetails()</code>, aur <code>openQuickViewModal()</code> me:
+                    <ul>
+                        <li>Agar product <em>Out of Stock</em> ya <em>Unavailable</em> hai toh Red/Grey badge lagta hai.</li>
+                        <li><strong>"Add to Bag"</strong> aur <strong>"Buy Now"</strong> buttons disable ho jate hain aur text badalkar <em>"Out of Stock"</em> ya <em>"Unavailable"</em> ho jata hai.</li>
+                        <li>Click karne par warning toast notification aata hai.</li>
+                    </ul>
+                </li>
+                <li><strong>Deactivated Categories Filtering:</strong> <code>renderWordPressCategories()</code> me <code>status !== "deactivated" && showOnHome !== false</code> ka filter lagaya gaya hai.</li>
+                <li><strong>Coupon Expiry Checkout Validation:</strong>
+                    <code>setupPromoApplication()</code> me coupon apply karte waqt check hota hai — agar coupon expired hai (jaise <code>EXPIRED50</code>) toh message aata hai: <em>"Coupon 'EXPIRED50' has expired (1 Aug 2026)."</em> aur discount apply nahi hota.
+                </li>
+                <li><strong>Cross-Tab Live Sync:</strong> <code>pretute_data_sync</code> event listener me banners, products, categories, aur settings sabhi views ko instantly update kiya gaya hai.</li>
+            </ul>
+            <div class="hinglish-box">
+                <strong>Sir ko kya batana hai:</strong> "Sir, <code>app.js</code> website ka main customer-facing engine hai. Admin panel me aap jo bhi banner badloge, product ko out-of-stock ya deactivate karoge, ya coupon expire hoga — uska turant real-time effect customer side par bina refresh kiye padega."
+            </div>
+        </div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <h2>2. Features Overview & Comparison Table</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Feature Name</th>
+                <th>Admin Side Option (Where It Is)</th>
+                <th>Storefront Behavior (Customer Effect)</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Homepage Banners</strong></td>
+                <td>Admin Left Sidebar -> <em>Homepage Banners</em> tab, with Add/Edit Modal, sequence order & device image upload.</td>
+                <td>Home hero carousel live render hota hai, headline/subtitle/buttons aur links admin ke set kiye huye aate hain.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Stock Status</strong></td>
+                <td>Product Modal -> <code>Stock Status</code> dropdown: <em>In Stock</em>, <em>Out of Stock</em>, <em>On Backorder</em>.</td>
+                <td>Out of stock hone par card aur detail page par Red badge lagta hai aur "Add to Bag" disable ho jata hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Stock Quantity</strong></td>
+                <td>Product Modal -> <code>Stock Quantity (Units)</code> number input.</td>
+                <td>Detail page par <em>"In Stock (25 units left)"</em> display hota hai. Order place hone par stock auto minus hota hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Availability</strong></td>
+                <td>Product Modal -> <code>Stock Availability</code>: <em>Available for Purchase</em> vs <em>Unavailable</em>.</td>
+                <td>Unavailable hone par product card dimmed ho jata hai, badge <em>Unavailable</em> aata hai aur purchase block hoti hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Deactivate Product</strong></td>
+                <td>Product Modal & Table -> <code>Product Status</code>: <em>Active</em> vs <em>Deactivated</em> (with 1-click toggle button).</td>
+                <td>Deactivated product poori website, search suggestions, aur category pages se gayab ho jata hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Category Status & Home Toggle</strong></td>
+                <td>Category Modal & Cards -> <code>Status</code> (Active/Deactivate) + <code>Show on Homepage</code> checkbox.</td>
+                <td>Deactivate ya uncheck karne par category home screen ke scroll strip se hat jati hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+            <tr>
+                <td><strong>Coupon Expiry Date</strong></td>
+                <td>Coupon Modal -> <code>Valid Till / Expiry Date</code> date picker + Admin table me Expiry column.</td>
+                <td>Date nikalte hi Admin me <em>Expired</em> badge lagta hai aur cart checkout pe apply karne par error aata hai.</td>
+                <td><span class="badge badge-active">Live & Working</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3. Ashok Sir ko Demo Dikhane ke Steps (Demo Script)</h2>
+    <p>Jab aap Ashok Sir ko computer par test karke dikhayenge, toh ye 4 simple steps follow karein:</p>
+
+    <div class="demo-step">
+        <div class="demo-step-num">Step 1: Homepage Banners ka Demo</div>
+        <p style="margin-top: 4px;">
+            1. <strong>admin.html</strong> kholein aur PIN <code>1234</code> daal kar login karein.<br>
+            2. Left sidebar me <strong>"Homepage Banners"</strong> par click karke Sir ko dikhayein ki Banners ki list aa rahi hai.<br>
+            3. <strong>"+ Add New Banner"</strong> par click karein, koi title daalein (jaise: <em>"Special Festive Offer"</em>), photo select karein aur Save karein.<br>
+            4. Dusre tab me <strong>index.html</strong> kholein aur Sir ko dikhayein ki wo naya banner top slider me turant live chalne laga!
+        </p>
+    </div>
+
+    <div class="demo-step">
+        <div class="demo-step-num">Step 2: Product Stock, Out-of-Stock, aur Deactivate ka Demo</div>
+        <p style="margin-top: 4px;">
+            1. Admin me <strong>"Products"</strong> tab par click karein.<br>
+            2. Kisi bhi product ke saamne wale <strong>Stock Toggle</strong> button par click karke use <em>"Out of Stock"</em> kar dein.<br>
+            3. Website (index.html) par jaakar dekhein — us product par <strong>"Out of Stock"</strong> ka Red badge lag chuka hai aur <strong>Add to Bag button disable</strong> ho chuka hai.<br>
+            4. Phir Admin me usi product ke <strong>Toggle Active/Deactivate</strong> button par click karein — wo product website se instantly hide ho jayega!
+        </p>
+    </div>
+
+    <div class="demo-step">
+        <div class="demo-step-num">Step 3: Category Status ka Demo</div>
+        <p style="margin-top: 4px;">
+            1. Admin me <strong>"Categories"</strong> tab kholein.<br>
+            2. Kisi category (e.g. <em>DIY Kit</em>) par Deactivate button dabayein.<br>
+            3. Storefront ke home page par "Shop by Category" strip me wo category display hona band ho jayegi.
+        </p>
+    </div>
+
+    <div class="demo-step">
+        <div class="demo-step-num">Step 4: Expired Coupon Block hone ka Demo</div>
+        <p style="margin-top: 4px;">
+            1. Admin ke <strong>"Coupons & Deals"</strong> tab me Sir ko dikhayein ki <strong>"Valid Till / Expiry"</strong> column aa gaya hai aur <code>EXPIRED50</code> coupon ke aage <strong>Expired</strong> badge dikh raha hai.<br>
+            2. Website par koi item cart me daal kar checkout (<code>#cart</code>) par jayein.<br>
+            3. Promo Code box me <code>EXPIRED50</code> type karke <strong>Apply Promo</strong> click karein.<br>
+            4. Sir ko dikhayein ki screen par Red warning aati hai: <em>"Coupon 'EXPIRED50' has expired"</em> aur koi discount deduct nahi hota.
+        </p>
+    </div>
+
+    <div class="footer-text">
+        PRETUTE Luxury E-Commerce Platform &bull; Project Implementation Report &bull; Ready for Client Review
+    </div>
+
+</body>
+</html>

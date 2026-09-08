@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="PRETUTE - Premium e-commerce destination for children, baby boutique essentials, wooden toys, nursery gear, and stylish maternity wear. Experience premium quality.">
+    <title>PRETUTE | Premium Baby, Kids & Maternity Lifestyle Store</title>
+    <!-- Google Fonts: Outfit & Playfair Display -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome for premium icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Sheet -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- Sticky Header -->
+    <header class="main-header" id="mainHeader">
+        <div class="header-top">
+            <p>🌟 Spend ₹1,499+ for Free Shipping! | Code: <span class="promo-highlight">PRETUTE20</span></p>
+        </div>
+        <div class="header-container">
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Toggle Menu">
+                <i class="fa-solid fa-bars-staggered"></i>
+            </button>
+
+            <!-- Brand Logo -->
+            <a href="#home" class="logo-container" id="logoLink">
+                <img src="assets/logo.png" alt="PRETUTE Logo" class="brand-logo" id="brandLogo">
+            </a>
+
+            <!-- Search Area -->
+            <div class="search-wrapper">
+                <form class="search-form" id="searchForm" autocomplete="off">
+                    <input type="text" id="searchInput"
+                        placeholder="Search for organic clothes, Montessori toys, gear..." aria-label="Search">
+                    <button type="submit" class="search-btn" aria-label="Submit Search">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </form>
+                <!-- Search Suggestions Popup -->
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- Dynamic suggestions filled by JS -->
+                </div>
+            </div>
+
+            <!-- Utility Navigation Icons -->
+            <div class="header-utilities">
+                <!-- User Profile -->
+                <div class="utility-item dropdown-wrapper" id="userAccountWrapper">
+                    <button class="utility-btn" id="userMenuBtn" aria-label="User Account">
+                        <i class="fa-regular fa-user"></i>
+                        <span class="utility-label">Account</span>
+                    </button>
+                    <div class="utility-dropdown" id="userDropdown">
+                        <div class="dropdown-header">
+                            <p class="dropdown-title">Welcome to PRETUTE</p>
+                            <p class="dropdown-subtitle">Access your account & orders</p>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <a href="#login" class="dropdown-link btn-login" id="loginBtn">Sign In / Register</a>
+                        <a href="#orders" class="dropdown-link" id="ordersLink"><i class="fa-solid fa-box-open"></i> My
+                            Orders</a>
+                        <a href="#wishlist" class="dropdown-link" id="wishlistLink"><i class="fa-regular fa-heart"></i>
+                            My Wishlist</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="admin.html" target="_blank" class="dropdown-link"
+                            style="color: var(--color-primary); font-weight: 600;"><i
+                                class="fa-solid fa-shield-halved"></i> Admin Back Panel</a>
+                    </div>
+                </div>
+
+                <!-- Wishlist -->
+                <a href="#wishlist" class="utility-item" id="wishlistIconBtn" aria-label="Wishlist">
+                    <div class="icon-badge-wrapper">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="badge" id="wishlistBadge">0</span>
+                    </div>
+                    <span class="utility-label">Wishlist</span>
+                </a>
+
+                <!-- Cart Drawer Toggle -->
+                <button class="utility-item utility-btn" id="cartToggleBtn" aria-label="Open Shopping Cart">
+                    <div class="icon-badge-wrapper">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span class="badge" id="cartBadge">0</span>
+                    </div>
+                    <span class="utility-label">Cart</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Desktop Navigation Bar -->
+        <nav class="desktop-navigation" id="desktopNav">
+            <ul class="nav-links">
+
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#services" class="nav-link">Services</a></li>
+                <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#reviews" class="nav-link">Reviews</a></li>
+                <li><a href="#why-us" class="nav-link">Why Us</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
+                <li><a href="#cart" class="nav-link"><i class="fa-solid fa-bag-shopping"></i> Cart</a></li>
+        </nav>
+
+        <!-- Mobile Navigation Menu Sidebar -->
+        <div class="mobile-sidebar-overlay" id="mobileSidebarOverlay"></div>
+        <div class="mobile-sidebar" id="mobileSidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Menu</span>
+                <button class="close-sidebar-btn" id="closeSidebarBtn" aria-label="Close Menu">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <ul class="mobile-nav-links">
+
+
+                <li><a href="#home" class="mob-link"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="#services" class="mob-link"><i class="fa-solid fa-briefcase"></i> Services</a></li>
+                <li><a href="#about" class="mob-link"><i class="fa-solid fa-circle-info"></i> About</a></li>
+                <li><a href="#reviews" class="mob-link"><i class="fa-solid fa-star"></i> Reviews</a></li>
+                <li><a href="#why-us" class="mob-link"><i class="fa-solid fa-circle-check"></i> Why Us</a></li>
+                <li><a href="#contact" class="mob-link"><i class="fa-solid fa-envelope"></i> Contact</a></li>
+                <li><a href="#cart" class="mob-link"><i class="fa-solid fa-bag-shopping"></i> Cart</a></li>
+
+            </ul>
+            <div class="sidebar-footer">
+                <p>Support: support@pretute.com</p>
+                <div class="mob-socials">
+                    <a href="#" class="social-circle"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-circle"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-circle"><i class="fa-brands fa-pinterest-p"></i></a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Shopping Cart Slide-out Drawer -->
+    <div class="cart-drawer-overlay" id="cartDrawerOverlay"></div>
+    <div class="cart-drawer" id="cartDrawer" role="dialog" aria-modal="true" aria-label="Shopping Cart Drawer">
+        <div class="drawer-header">
+            <h3>Shopping Bag (<span id="cartDrawerCount">0</span>)</h3>
+            <button class="close-drawer-btn" id="closeDrawerBtn" aria-label="Close Cart">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Cart Drawer Body -->
+        <div class="drawer-body" id="cartDrawerBody">
+            <!-- Dynamic Cart Items loaded by JS -->
+            <div class="empty-cart-message">
+                <i class="fa-solid fa-basket-shopping"></i>
+                <p>Your bag is empty!</p>
+                <a href="#home" class="btn btn-primary" id="drawerContinueBtn">Start Shopping</a>
+            </div>
+        </div>
+
+        <!-- Cart Drawer Footer -->
+        <div class="drawer-footer" id="cartDrawerFooter">
+            <div class="subtotal-row">
+                <span>Subtotal:</span>
+                <span class="subtotal-amount" id="cartDrawerSubtotal">₹0.00</span>
+            </div>
+            <p class="shipping-notice">Shipping & taxes calculated at checkout.</p>
+            <div class="drawer-actions">
+                <a href="#cart" class="btn btn-secondary btn-block" id="viewCartDrawerBtn">View Full Bag</a>
+                <button class="btn btn-primary btn-block" id="checkoutDrawerBtn">Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick View Modal -->
+    <div class="modal-overlay" id="quickViewOverlay">
+        <div class="modal-container" role="dialog" aria-modal="true">
+            <button class="close-modal-btn" id="closeModalBtn" aria-label="Close Quick View">&times;</button>
+            <div class="modal-content" id="quickViewContent">
+                <!-- Dynamically populated product quick view -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Main View Wrapper -->
+    <main class="main-content" id="mainContent">
+
+        <!-- ==================== VIEW: HOME ==================== -->
+        <!-- ==================== VIEW: HOME ==================== -->
+        <section id="homeView" class="page-view active">
+
+            <!-- 1. Hero Banner Carousel (Ab yeh sabse upar header ke theek niche aayega) -->
+            <div class="hero-carousel-section">
+                <div class="carousel-container" id="heroCarousel">
+                    <div class="carousel-slider" id="carouselSlider">
+                        <!-- Slide 1 -->
+                        <div class="carousel-slide active"
+                            style="background-image: linear-gradient(rgba(26,37,60,0.5), rgba(26,37,60,0.2)), url('assets/hero_fashion.png');">
+                            <div class="carousel-content">
+                                <span class="slide-subtitle">Spring/Summer Collection</span>
+                                <h2 class="slide-title">Luxury Organic Wear for Little Ones</h2>
+                                <p class="slide-desc">Aesthetic pastel rompers and kids apparel hand-knit with 100%
+                                    GOTS-certified organic cotton.</p>
+                                <div class="slide-actions">
+                                    <a href="#category/baby-fashion" class="btn btn-primary btn-large">Shop Kids
+                                        Fashion</a>
+                                    <a href="#category/maternity" class="btn btn-outline btn-large">Explore
+                                        Maternity</a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="carousel-slide"
+                            style="background-image: linear-gradient(rgba(26,37,60,0.5), rgba(26,37,60,0.2)), url('assets/hero_toys.png');">
+                            <div class="carousel-content">
+                                <span class="slide-subtitle">Play & Grow</span>
+                                <h2 class="slide-title">Handcrafted Montessori Toys</h2>
+                                <p class="slide-desc">Promote creative exploration, sensory growth, and active learning
+                                    with premium toxin-free wood playsets.</p>
+                                <div class="slide-actions">
+                                    <a href="#category/wooden-toys" class="btn btn-primary btn-large">Shop Montessori
+                                        Toys</a>
+                                    <a href="#home" class="btn btn-outline btn-large">View Best Sellers</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Slider Arrows -->
+                    <button class="carousel-arrow prev" id="carouselPrevBtn" aria-label="Previous Slide"><i
+                            class="fa-solid fa-chevron-left"></i></button>
+                    <button class="carousel-arrow next" id="carouselNextBtn" aria-label="Next Slide"><i
+                            class="fa-solid fa-chevron-right"></i></button>
+                    <!-- Slide Indicators -->
+                    <div class="carousel-dots" id="carouselDots">
+                        <span class="dot active" data-slide="0"></span>
+                        <span class="dot" data-slide="1"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Shop by Category Quick Scroll Section -->
+            <div class="category-scroll-section">
+                <div class="section-container">
+                    <div class="section-header category-heading-center">
+                        <h2 class="section-title">Shop by Category</h2>
+                    </div>
+                    <div class="category-scroll-container" id="categoryScrollContainer">
+                        <a href="#category/baby-fashion" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/prod_romper.png" alt="Baby Fashion">
+                            </div>
+                            <span class="cat-name">Baby Fashion</span>
+                        </a>
+                        <a href="#category/wooden-toys" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/prod_rainbow.png" alt="Montessori Toys">
+                            </div>
+                            <span class="cat-name">Montessori Toys</span>
+                        </a>
+                        <a href="#category/baby-gear" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/prod_stroller.png" alt="Baby Gear">
+                            </div>
+                            <span class="cat-name">Baby Gear</span>
+                        </a>
+                        <a href="#category/maternity" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/prod_dress.png" alt="Maternity Wear">
+                            </div>
+                            <span class="cat-name">Maternity</span>
+                        </a>
+                        <a href="#category/diy-kit" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/DIY KIT.jpg" alt="DIY Kit">
+                            </div>
+                            <span class="cat-name">DIY Kit</span>
+                        </a>
+                        <a href="#category/resin-art" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/Resin Art.jpg" alt="Resin Art">
+                            </div>
+                            <span class="cat-name">Resin Art</span>
+                        </a>
+                        <a href="#category/decorative-shop" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/Decorative Shop.jpg" alt="Decorative Shop">
+                            </div>
+                            <span class="cat-name">Decorative Shop</span>
+                        </a>
+                        <a href="#category/candle" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/candle.jpg" alt="Candle">
+                            </div>
+                            <span class="cat-name">Candle</span>
+                        </a>
+                        <a href="#category/corporate-gifts" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/Corporate Gifts.jpg" alt="Corporate Gifts">
+                            </div>
+                            <span class="cat-name">Corporate Gifts</span>
+                        </a>
+                        <a href="#category/home-decor" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/Home Decor.jpg" alt="Home Decor">
+                            </div>
+                            <span class="cat-name">Home Decor</span>
+                        </a>
+                        <a href="#category/treasure-keeps" class="cat-scroll-card">
+                            <div class="cat-img-wrapper">
+                                <img src="assets/Treasure Keeps.jpg" alt="Treasure Keeps">
+                            </div>
+                            <span class="cat-name">Treasure Keeps</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Discount/Offer Cards Grid -->
+            <div class="offers-section">
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Exclusive Deals of the Day</h2>
+                        <div class="countdown-badge">
+                            <span class="label">ENDS IN:</span>
+                            <span class="timer-digits" id="offerCountdown">04:23:15</span>
+                        </div>
+                    </div>
+                    <div class="offers-grid">
+                        <div class="offer-card promo-card pink-card">
+                            <div class="offer-badge">FLAT 20% OFF</div>
+                            <h3 class="offer-title">Storewide Luxury Fest</h3>
+                            <p class="offer-sub">Flat 20% off entire order. Applies to all collections.</p>
+                            <div class="coupon-code-box">
+                                <span class="code">PRETUTE20</span>
+                                <button class="copy-coupon-btn" data-code="PRETUTE20">COPY</button>
+                            </div>
+                        </div>
+                        <div class="offer-card promo-card gold-card">
+                            <div class="offer-badge">FLAT 25% OFF</div>
+                            <h3 class="offer-title">Nursery & Gear Fest</h3>
+                            <p class="offer-sub">Discount applied at checkout on gear, strollers & cribs.</p>
+                            <div class="coupon-code-box">
+                                <span class="code">GEAR25</span>
+                                <button class="copy-coupon-btn" data-code="GEAR25">COPY</button>
+                            </div>
+                        </div>
+                        <div class="offer-card promo-card teal-card">
+                            <div class="offer-badge">FLAT ₹500 OFF</div>
+                            <h3 class="offer-title">Toys & Craft Kits</h3>
+                            <p class="offer-sub">On orders above ₹1,500 in Montessori toys and DIY craft kits.</p>
+                            <div class="coupon-code-box">
+                                <span class="code">PLAYFREE</span>
+                                <button class="copy-coupon-btn" data-code="PLAYFREE">COPY</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Product Showcases -->
+            <div class="category-showcase-section">
+                <div class="section-container">
+                    <div class="section-header">
+                        <h2 class="section-title">Featured Collections</h2>
+                        <a href="#category/all" class="view-all-link">View All Products <i
+                                class="fa-solid fa-arrow-right"></i></a>
+                    </div>
+                    <!-- Products Grid -->
+                    <div class="products-grid" id="homeProductsGrid">
+                        <!-- Rendered by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brand Philosophy Banner -->
+            <div class="philosophy-section">
+                <div class="section-container philosophy-grid">
+                    <div class="philosophy-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-seedling"></i></div>
+                        <h4>100% Organic Materials</h4>
+                        <p>We source only GOTS-certified organic cotton, chemical-free dyes, and solid
+                            sustainably-harvested timber.</p>
+                    </div>
+                    <div class="philosophy-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h4>Safety First Certification</h4>
+                        <p>Every toy, crib, and carrier is rigorously tested against safety standards to ensure
+                            toxin-free and child-safe play.</p>
+                    </div>
+                    <div class="philosophy-card">
+                        <div class="icon-wrapper"><i class="fa-solid fa-hands-holding"></i></div>
+                        <h4>Artisan Handcrafted</h4>
+                        <p>Our wooden stackers and fabric dolls are made in small batches by global artisan families
+                            with love.</p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==================== VIEW: PRODUCT DETAILS ==================== -->
+        <section id="detailsView" class="page-view">
+            <div class="section-container">
+                <!-- Breadcrumbs -->
+                <div class="breadcrumbs">
+                    <a href="#home">Home</a> &gt; <span id="breadcrumbCategory">Category</span> &gt; <span
+                        id="breadcrumbProduct" class="active">Product Title</span>
+                </div>
+
+                <!-- Main Details Layout -->
+                <div class="product-details-layout">
+                    <!-- Images Gallery Component -->
+                    <div class="product-gallery">
+                        <div class="main-image-container" id="zoomContainer">
+                            <img src="assets/prod_romper.png" alt="Main Product Image" id="mainDetailImg">
+                            <!-- Lens or Overlay zoom container -->
+                            <div class="zoom-lens" id="zoomLens"></div>
+                            <div class="zoom-result" id="zoomResult"></div>
+                        </div>
+                        <div class="thumbnail-list" id="detailThumbnails">
+                            <!-- Loaded dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Information Component -->
+                    <div class="product-info-panel">
+                        <div class="brand-tag">PRETUTE ORIGINAL</div>
+                        <h1 class="product-title" id="detailTitle">Organic Cotton Baby Romper</h1>
+
+                        <div class="product-rating-box">
+                            <div class="stars" id="detailStars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-regular fa-star"></i>
+                            </div>
+                            <span class="rating-count" id="detailReviewsCount">(42 Customer Reviews)</span>
+                        </div>
+
+                        <!-- Stock & Availability Status Badge -->
+                        <div id="detailStockAvailability" class="stock-availability-pill in-stock">
+                            <i class="fa-solid fa-circle-check"></i> In Stock
+                        </div>
+
+                        <!-- Price Section -->
+                        <div class="price-box">
+                            <span class="discount-price" id="detailDiscountPrice">₹0.00</span>
+                            <span class="original-price" id="detailOriginalPrice">₹0.00</span>
+                            <span class="discount-pill" id="detailDiscountPercentage">20% OFF</span>
+                        </div>
+
+                        <p class="product-short-desc" id="detailShortDesc">Made from ultra-soft GOTS-certified organic
+                            knit cotton, keeping your little bundle comfortable all day long. Features simple snap
+                            buttons for easy changes.</p>
+
+                        <div class="divider"></div>
+
+                        <!-- Variations Options -->
+                        <div class="product-variants">
+                            <!-- Size Selector -->
+                            <div class="variant-selector">
+                                <span class="variant-label">Select Size:</span>
+                                <div class="size-options" id="sizeOptions">
+                                    <button class="size-chip active">0-3M</button>
+                                    <button class="size-chip">3-6M</button>
+                                    <button class="size-chip">6-12M</button>
+                                    <button class="size-chip">12-18M</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions Bar -->
+                        <div class="purchase-actions">
+                            <div class="quantity-selector">
+                                <button class="qty-btn dec" id="detailQtyDec">-</button>
+                                <input type="number" class="qty-input" id="detailQtyInput" value="1" min="1">
+                                <button class="qty-btn inc" id="detailQtyInc">+</button>
+                            </div>
+                            <button class="btn btn-primary" id="detailAddToCartBtn"><i
+                                    class="fa-solid fa-bag-shopping"></i> Add to Bag</button>
+                            <button class="btn btn-accent" id="detailBuyNowBtn">Buy Now</button>
+                            <button class="wishlist-btn-round" id="detailWishlistBtn" aria-label="Add to Wishlist">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                        </div>
+
+                        <!-- Perks Info -->
+                        <div class="product-perks">
+                            <div class="perk-item">
+                                <i class="fa-solid fa-truck-fast"></i>
+                                <div>
+                                    <strong>Free & Fast Delivery</strong>
+                                    <span>Shipped in eco-friendly packaging within 2-3 business days.</span>
+                                </div>
+                            </div>
+                            <div class="perk-item">
+                                <i class="fa-solid fa-rotate-left"></i>
+                                <div>
+                                    <strong>Easy 30-Day Returns</strong>
+                                    <span>No questions asked, pre-paid return label included in the box.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Specifications / Detailed Tabs -->
+                <div class="product-specs-tabs">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" data-tab="tab-description">Description</button>
+                        <button class="tab-btn" data-tab="tab-specifications">Specifications</button>
+                        <button class="tab-btn" data-tab="tab-reviews">Reviews</button>
+                    </div>
+                    <div class="tabs-content">
+                        <!-- Description Tab -->
+                        <div class="tab-pane active" id="tab-description">
+                            <p id="detailLongDesc">Our garments are engineered for pure comfort. Designed to support
+                                flexible mobility and easy movements, this item features flat seams that will not
+                                irritate your child's delicate skin. The nickel-free snaps along the inseam ensure quick
+                                changes without fully undressing, while the breathable knit prevents overheating. GOTS
+                                certification represents the highest environmental and social standard in organic
+                                textiles.</p>
+                        </div>
+                        <!-- Specifications Tab -->
+                        <div class="tab-pane" id="tab-specifications">
+                            <table class="specs-table">
+                                <tbody id="detailSpecsTable">
+                                    <tr>
+                                        <td>Material</td>
+                                        <td>100% Organic Cotton (GOTS Certified)</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Origin</td>
+                                        <td>Handcrafted in Portugal</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Care Instructions</td>
+                                        <td>Machine wash cold, tumble dry low</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Safety Standards</td>
+                                        <td>OEKO-TEX Standard 100 Certified</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Reviews Tab -->
+                        <div class="tab-pane" id="tab-reviews">
+                            <div class="reviews-summary-block">
+                                <div class="average-rating">
+                                    <h3 class="score">4.8</h3>
+                                    <div class="stars">
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                        <i class="fa-solid fa-star"></i>
+                                    </div>
+                                    <p>Based on reviews</p>
+                                </div>
+                                <div class="rating-bars">
+                                    <div class="bar-row">
+                                        <span>5★</span>
+                                        <div class="bar-outer">
+                                            <div class="bar-inner" style="width: 85%;"></div>
+                                        </div>
+                                        <span>85%</span>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span>4★</span>
+                                        <div class="bar-outer">
+                                            <div class="bar-inner" style="width: 10%;"></div>
+                                        </div>
+                                        <span>10%</span>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span>3★</span>
+                                        <div class="bar-outer">
+                                            <div class="bar-inner" style="width: 5%;"></div>
+                                        </div>
+                                        <span>5%</span>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span>2★</span>
+                                        <div class="bar-outer">
+                                            <div class="bar-inner" style="width: 0%;"></div>
+                                        </div>
+                                        <span>0%</span>
+                                    </div>
+                                    <div class="bar-row">
+                                        <span>1★</span>
+                                        <div class="bar-outer">
+                                            <div class="bar-inner" style="width: 0%;"></div>
+                                        </div>
+                                        <span>0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="customer-reviews-list" id="detailReviewsList">
+                                <!-- Loaded dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Products Carousel -->
+                <div class="related-products-section">
+                    <h3 class="related-title">You Might Also Love</h3>
+                    <div class="products-grid" id="relatedProductsGrid">
+                        <!-- Filled dynamically by JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW: CART & CHECKOUT ==================== -->
+        <section id="cartView" class="page-view">
+            <div class="section-container">
+                <h1 class="page-title">Shopping Bag</h1>
+                <div class="cart-layout" id="cartPageLayout">
+                    <!-- Left: Cart Items List -->
+                    <div class="cart-items-wrapper">
+                        <div class="cart-items-list" id="cartPageItemsList">
+                            <!-- Filled dynamically by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Right: Pricing Summary / Checkout Cards -->
+                    <div class="cart-summary-wrapper">
+                        <div class="summary-card">
+                            <h3>Order Summary</h3>
+                            <div class="summary-row">
+                                <span>Bag Total (<span id="cartPageItemsCount">0</span> items)</span>
+                                <span id="cartPageSubtotal">₹0.00</span>
+                            </div>
+                            <div class="summary-row text-success">
+                                <span>Promotion Savings</span>
+                                <span id="cartPagePromoSavings">-₹0.00</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping Cost</span>
+                                <span id="cartPageShipping" class="text-success">FREE</span>
+                            </div>
+                            <div class="divider"></div>
+
+                            <!-- Coupon Code Application Box -->
+                            <div class="promo-input-wrapper">
+                                <input type="text" id="cartPromoInput" placeholder="Enter coupon code"
+                                    class="promo-field">
+                                <button class="btn btn-secondary btn-apply" id="applyPromoBtn">Apply</button>
+                            </div>
+                            <div class="promo-feedback" id="promoFeedback"></div>
+
+                            <!-- Customer & Delivery Information (Production Ready) -->
+                            <div class="checkout-customer-section"
+                                style="margin: 18px 0; padding-top: 14px; border-top: 1px dashed var(--color-border);">
+                                <h4
+                                    style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-navy); display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa-solid fa-truck" style="color: var(--color-primary);"></i> Delivery &
+                                    Contact Details
+                                </h4>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <input type="text" id="custFullName" placeholder="Full Name *" required
+                                        style="width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
+                                    <input type="tel" id="custPhone" placeholder="Mobile Number (10 digits) *" required
+                                        style="width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
+                                    <input type="email" id="custEmail" placeholder="Email Address (Optional)"
+                                        style="width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
+                                    <textarea id="custAddress" rows="2"
+                                        placeholder="Full Delivery Address & House/Flat No. *" required
+                                        style="width: 100%; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; resize: none;"></textarea>
+                                    <div style="display: flex; gap: 8px;">
+                                        <input type="text" id="custCity" placeholder="City *" required
+                                            style="flex: 1; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
+                                        <input type="text" id="custPincode" placeholder="Pincode *" required
+                                            style="width: 110px; padding: 10px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem;">
+                                    </div>
+                                    <div style="margin-top: 4px;">
+                                        <label
+                                            style="font-size: 0.82rem; font-weight: 600; color: var(--color-navy); display: block; margin-bottom: 4px;">Payment
+                                            Method:</label>
+                                        <select id="custPaymentMethod"
+                                            style="width: 100%; padding: 9px 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; background: #fff;">
+                                            <option value="Cash on Delivery">Cash on Delivery (Pay upon delivery)
+                                            </option>
+                                            <option value="Online UPI / QR">Online UPI / QR Payment</option>
+                                            <option value="Credit / Debit Card">Credit / Debit Card</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="checkoutErrorMsg"
+                                    style="display: none; color: #ef4444; font-size: 0.8rem; margin-top: 8px; font-weight: 600;">
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-block checkout-trigger-btn" id="checkoutSubmitBtn">Place
+                                Order</button>
+
+                            <div class="trust-badges">
+                                <span><i class="fa-solid fa-lock"></i> SSL Secured</span>
+                                <span><i class="fa-solid fa-shield"></i> Safe Payments</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty Cart State -->
+                <div class="empty-cart-page" id="emptyCartPage" style="display: none;">
+                    <div class="empty-message-box">
+                        <div class="cart-icon-circle"><i class="fa-solid fa-basket-shopping"></i></div>
+                        <h2>Your Shopping Bag is Empty</h2>
+                        <p>Explore our beautiful collections of children apparel, high-quality wooden toys, nursery
+                            items, and maternity wear.</p>
+                        <a href="#home" class="btn btn-primary">Go to Home</a>
+                    </div>
+                </div>
+
+                <!-- Order Success Feedback overlay -->
+                <div class="success-screen-overlay" id="successScreenOverlay">
+                    <div class="success-card">
+                        <div class="success-check-circle"><i class="fa-solid fa-check"></i></div>
+                        <h2>Order Placed Successfully!</h2>
+                        <p>Thank you for shopping with **PRETUTE**. We've sent a confirmation email containing details
+                            and tracking link to your registered email address.</p>
+                        <div class="summary-receipt">
+                            <p><strong>Order ID:</strong> <span id="successOrderId">PRT-7810091-893</span></p>
+                            <p><strong>Customer:</strong> <span id="successCustomerName">Customer</span></p>
+                            <p><strong>Amount Paid:</strong> <span id="successTotalPaid">₹0.00</span></p>
+                            <p><strong>Payment Mode:</strong> <span id="successPaymentMode">Cash on Delivery</span></p>
+                        </div>
+                        <button class="btn btn-primary" id="successCloseBtn">Continue Shopping</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW: CONTACT FORM ==================== -->
+        <section id="contactView" class="page-view">
+            <div class="contact-hero-banner">
+                <div class="section-container">
+                    <h1>Let's Connect</h1>
+                    <p>Have questions about sizes, materials, nursery design consults, or wholesale? We're here to
+                        assist!</p>
+                </div>
+            </div>
+
+            <div class="section-container contact-layout-grid">
+                <!-- Contact Info Panel -->
+                <div class="contact-info-panel">
+                    <h3>Contact Information</h3>
+                    <p class="lead-text">Drop by our headquarters or contact our custom support team anytime.</p>
+
+                    <div class="contact-details-list">
+                        <div class="detail-item">
+                            <div class="icon-circle"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <h5>Call Us</h5>
+                                <p>+1 (800) 555-0199</p>
+                                <span>Mon - Sat: 9:00 AM - 7:00 PM EST</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="icon-circle"><i class="fa-solid fa-envelope"></i></div>
+                            <div>
+                                <h5>Email Support</h5>
+                                <p>support@pretute.com</p>
+                                <span>Average response within 2-4 hours.</span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="icon-circle"><i class="fa-solid fa-location-dot"></i></div>
+                            <div>
+                                <h5>Headquarters</h5>
+                                <p>100 Premium Blvd, Suite 300<br>New York, NY 10001, USA</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="social-block">
+                        <h5>Follow Our Journey</h5>
+                        <div class="social-row">
+                            <a href="#" class="social-circle"><i class="fa-brands fa-instagram"></i></a>
+                            <a href="#" class="social-circle"><i class="fa-brands fa-facebook-f"></i></a>
+                            <a href="#" class="social-circle"><i class="fa-brands fa-pinterest-p"></i></a>
+                            <a href="#" class="social-circle"><i class="fa-brands fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Panel -->
+                <div class="contact-form-container">
+                    <h3>Send Us a Message</h3>
+                    <form class="contact-form" id="contactUsForm">
+                        <div class="form-row-two">
+                            <div class="form-group floating-label-group">
+                                <input type="text" id="contactName" required placeholder=" " class="form-input">
+                                <label for="contactName">Full Name</label>
+                                <span class="validation-msg">Please enter your name</span>
+                            </div>
+                            <div class="form-group floating-label-group">
+                                <input type="email" id="contactEmail" required placeholder=" " class="form-input">
+                                <label for="contactEmail">Email Address</label>
+                                <span class="validation-msg">Please enter a valid email address</span>
+                            </div>
+                        </div>
+
+                        <div class="form-row-two">
+                            <div class="form-group floating-label-group">
+                                <input type="tel" id="contactPhone" placeholder=" " class="form-input">
+                                <label for="contactPhone">Phone Number (Optional)</label>
+                            </div>
+                            <div class="form-group floating-label-group">
+                                <input type="text" id="contactSubject" required placeholder=" " class="form-input">
+                                <label for="contactSubject">Subject</label>
+                                <span class="validation-msg">Please provide a subject</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group floating-label-group">
+                            <textarea id="contactMessage" rows="5" required placeholder=" "
+                                class="form-input form-textarea"></textarea>
+                            <label for="contactMessage">Your Message</label>
+                            <span class="validation-msg">Please type your message here</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large btn-submit" id="contactFormSubmitBtn">
+                            <span>Send Message</span> <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+
+                    <!-- Submission Success Feedback Card -->
+                    <div class="contact-success-card" id="contactSuccessCard">
+                        <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <h4>Message Sent!</h4>
+                        <p>Thank you for reaching out to PRETUTE. Our support representative has received your request
+                            and will follow up with you within 24 hours.</p>
+                        <button class="btn btn-outline" id="resetContactFormBtn">Send Another Message</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW: WISHLIST ==================== -->
+        <section id="wishlistView" class="page-view">
+            <div class="section-container">
+                <h1 class="page-title">My Wishlist</h1>
+                <div class="products-grid" id="wishlistProductsGrid">
+                    <!-- Filled dynamically by JS -->
+                </div>
+                <!-- Empty Wishlist State -->
+                <div class="empty-wishlist-state" id="emptyWishlistState" style="display: none;">
+                    <div class="empty-message-box">
+                        <div class="wishlist-icon-circle"><i class="fa-regular fa-heart"></i></div>
+                        <h2>Your Wishlist is Empty</h2>
+                        <p>Save items you like here by clicking the heart button on product cards.</p>
+                        <a href="#home" class="btn btn-primary">Discover Products</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW: SEARCH / CATEGORY RESULTS ==================== -->
+        <section id="searchView" class="page-view">
+            <div class="section-container">
+                <div class="search-results-header">
+                    <h1 class="page-title" id="searchResultTitle">Search Results</h1>
+                    <span class="results-count" id="searchResultsCount">0 items found</span>
+                </div>
+                <div class="products-grid" id="searchProductsGrid">
+                    <!-- Filled dynamically by JS -->
+                </div>
+                <!-- No Results State -->
+                <div class="no-results-state" id="noResultsState" style="display: none;">
+                    <div class="empty-message-box">
+                        <div class="search-icon-circle"><i class="fa-solid fa-magnifying-glass"></i></div>
+                        <h2>No Matches Found</h2>
+                        <p>We couldn't find anything matching your search. Please check your spelling or try another
+                            keyword.</p>
+                        <a href="#home" class="btn btn-primary">Browse All Products</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="main-footer">
+        <div class="footer-top">
+            <div class="section-container footer-grid">
+                <!-- Col 1: About -->
+                <div class="footer-col about-col">
+                    <a href="#home" class="footer-logo">
+                        <img src="assets/logo.png" alt="PRETUTE Logo" class="footer-brand-logo">
+                    </a>
+                    <p class="about-text">PRETUTE is a premium family lifestyle destination dedicated to organic baby &
+                        kids fashion, developmental Montessori play, modern nursery gear, and chic maternity wear.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Pinterest"><i class="fa-brands fa-pinterest-p"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <!-- Col 2: Categories -->
+                <div class="footer-col links-col">
+                    <h4 class="col-title">Shop Categories</h4>
+                    <ul class="footer-links">
+                        <li><a href="#category/baby-fashion">Baby & Kids Wear</a></li>
+                        <li><a href="#category/wooden-toys">Montessori Toys</a></li>
+                        <li><a href="#category/baby-gear">Nursery & Gear</a></li>
+                        <li><a href="#category/maternity">Maternity Wear</a></li>
+                        <li><a href="#category/artandcraft">art and craft</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Quick Links -->
+                <div class="footer-col links-col">
+                    <h4 class="col-title">Customer Care</h4>
+                    <ul class="footer-links">
+                        <li><a href="#contact">Contact Us</a></li>
+                        <li><a href="#contact">Shipping & Deliveries</a></li>
+                        <li><a href="#contact">30-Day Returns</a></li>
+                        <li><a href="admin.html" target="_blank"
+                                style="color: var(--color-primary); font-weight: 600;"><i class="fa-solid fa-gauge"></i>
+                                Admin Back Panel</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Newsletter -->
+                <div class="footer-col newsletter-col">
+                    <h4 class="col-title">Join the PRETUTE Club</h4>
+                    <p class="newsletter-text">Subscribe to receive launch previews, organic parenting insights, and 15%
+                        off your first order.</p>
+                    <form class="newsletter-form" id="newsletterForm" autocomplete="off">
+                        <div class="input-row">
+                            <input type="email" id="newsletterEmail" required placeholder="Your email address"
+                                aria-label="Newsletter Email">
+                            <button type="submit" aria-label="Subscribe"><i
+                                    class="fa-solid fa-arrow-right-long"></i></button>
+                        </div>
+                    </form>
+                    <div class="newsletter-success" id="newsletterSuccess">✓ Subscribed successfully! Check your inbox.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="section-container bottom-row">
+                <p class="copyright">&copy; 2026 PRETUTE Premium Store. All rights reserved.</p>
+                <div class="payment-methods">
+                    <i class="fa-brands fa-cc-visa"></i>
+                    <i class="fa-brands fa-cc-mastercard"></i>
+                    <i class="fa-brands fa-cc-stripe"></i>
+                    <i class="fa-brands fa-cc-apple-pay"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Centralized Store Data Layer -->
+    <script src="store-data.js"></script>
+    <!-- Core App Logic -->
+    <script src="app.js"></script>
+</body>
+
+</html>
