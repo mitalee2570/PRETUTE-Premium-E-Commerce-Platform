@@ -80,11 +80,6 @@
                             My Wishlist</a>
                         <a href="#refund-policy" class="dropdown-link" id="refundPolicyLink"><i
                                 class="fa-solid fa-shield-halved"></i> Refund Policy & Damage Video</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="admin.html" class="dropdown-link admin-link" id="adminPanelLink"
-                            title="Access Admin Back Panel">
-                            <i class="fa-solid fa-shield-halved"></i> Admin Back Panel
-                        </a>
                     </div>
                 </div>
 
@@ -138,11 +133,6 @@
                 <li><a href="#why-us" class="mob-link"><i class="fa-solid fa-circle-check"></i> Why Us</a></li>
                 <li><a href="#contact" class="mob-link"><i class="fa-solid fa-envelope"></i> Contact</a></li>
                 <li><a href="#cart" class="mob-link"><i class="fa-solid fa-bag-shopping"></i> Cart</a></li>
-                <li style="border-top: 1px solid var(--color-border); margin-top: 8px; padding-top: 8px;">
-                    <a href="admin.html" class="mob-link" style="color: var(--color-primary); font-weight: 700;">
-                        <i class="fa-solid fa-shield-halved"></i> Admin Back Panel
-                    </a>
-                </li>
                 <li>
                     <a href="#login" class="mob-link" id="mobLoginLink">
                         <i class="fa-regular fa-user"></i> Sign In / Account
@@ -296,17 +286,6 @@
                 <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; font-weight: 600;">Create
                     Free Account</button>
             </form>
-
-            <!-- Admin Back Panel Shortcut Box -->
-            <div class="auth-admin-callout">
-                <div class="auth-admin-callout-text">
-                    <strong>Store Administrator?</strong>
-                    <span>Access back panel to manage orders & inventory</span>
-                </div>
-                <a href="admin.html" class="auth-admin-btn" id="authModalAdminBtn">
-                    <i class="fa-solid fa-shield-halved"></i> Admin Panel
-                </a>
-            </div>
         </div>
     </div>
 
@@ -1581,9 +1560,7 @@
                         <li><a href="#contact">Shipping & Deliveries</a></li>
                         <li><a href="#refund-policy" id="footerRefundPolicyLink">Return & Refund Policy (Damage
                                 Video)</a></li>
-                        <li><a href="admin.html" target="_blank"
-                                style="color: var(--color-primary); font-weight: 600;"><i class="fa-solid fa-gauge"></i>
-                                Admin Back Panel</a></li>
+                        <li><a href="#about">FAQ & Help</a></li>
                     </ul>
                 </div>
 
@@ -1608,7 +1585,7 @@
 
         <div class="footer-bottom">
             <div class="section-container bottom-row">
-                <p class="copyright">&copy; 2026 PRETUTE Premium Store. All rights reserved.</p>
+                <p class="copyright" id="footerCopyright" title="PRETUTE Store">&copy; 2026 PRETUTE Premium Store. All rights reserved.</p>
                 <div class="payment-methods">
                     <i class="fa-brands fa-cc-visa"></i>
                     <i class="fa-brands fa-cc-mastercard"></i>

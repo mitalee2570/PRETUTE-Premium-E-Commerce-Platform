@@ -492,6 +492,10 @@ function setupRouter() {
         } else if (hash === "#refund-policy") {
             window.openRefundPolicyModal?.();
             return;
+        } else if (hash === "#admin") {
+            // Secret admin route: redirect directly to back panel
+            window.location.href = "admin.html";
+            return;
         } else {
             // Default Fallback
             viewId = "homeView";
@@ -3208,3 +3212,41 @@ function renderWordPressCategories() {
         });
     });
 }
+
+// ==========================================================================
+// STORE OWNER / ADMIN SECRET ACCESS TRIGGERS (HIDDEN FROM REGULAR CUSTOMERS)
+// ==========================================================================
+(function setupSecretAdminTriggers() {
+    // 1. Keyboard Shortcut: Ctrl + Shift + A or Alt + Shift + A
+    document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey || e.altKey) && e.shiftKey && (e.key === "A" || e.key === "a")) {
+            e.preventDefault();
+            window.location.href = "admin.html";
+        }
+    });
+
+    // 2. Secret Triple-Click on Footer Copyright
+    const attachCopyrightTrigger = () => {
+        const copyrightEl = document.getElementById("footerCopyright") || document.querySelector(".copyright");
+        if (copyrightEl) {
+            let clicks = 0;
+            let timer = null;
+            copyrightEl.addEventListener("click", () => {
+                clicks++;
+                clearTimeout(timer);
+                if (clicks >= 3) {
+                    window.location.href = "admin.html";
+                    clicks = 0;
+                } else {
+                    timer = setTimeout(() => { clicks = 0; }, 600);
+                }
+            });
+        }
+    };
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", attachCopyrightTrigger);
+    } else {
+        attachCopyrightTrigger();
+    }
+})();
