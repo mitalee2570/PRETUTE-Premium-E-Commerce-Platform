@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script>
+        (function() {
+            var fullUrl = window.location.href.toLowerCase();
+            var path = window.location.pathname.toLowerCase();
+            var hash = window.location.hash.toLowerCase();
+            var search = window.location.search.toLowerCase();
+            
+            // If the user typed index.html/admin or /admin or has admin in the URL
+            if (fullUrl.indexOf("admin") !== -1) {
+                // Determine base path if hosted in a subfolder (like GitHub Pages)
+                var repoName = "PRETUTE-Premium-E-Commerce-Platform";
+                if (window.location.pathname.indexOf(repoName) !== -1) {
+                    window.location.replace("/" + repoName + "/admin.html");
+                } else {
+                    window.location.replace("/admin.html");
+                }
+            } else {
+                // Regular 404 fallback to home
+                window.location.replace("index.html");
+            }
+        })();
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .box {
+            padding: 30px;
+            background: #1e293b;
+            border-radius: 12px;
+        }
+        a {
+            color: #ff5b7f;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>Redirecting to Admin Panel...</h2>
+        <p><a href="admin.html">Click here if not redirected automatically</a></p>
+    </div>
+</body>
+</html>

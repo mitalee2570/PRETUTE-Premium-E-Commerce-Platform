@@ -7,6 +7,13 @@
     <meta name="description"
         content="PRETUTE - Premium e-commerce destination for children, baby boutique essentials, wooden toys, nursery gear, and stylish maternity wear. Experience premium quality.">
     <title>PRETUTE | Premium Baby, Kids & Maternity Lifestyle Store</title>
+    <script>
+        // Immediate Admin Redirection Gate
+        if (window.location.hash.toLowerCase() === "#admin" || 
+            window.location.search.toLowerCase().indexOf("admin") !== -1) {
+            window.location.replace("admin.html");
+        }
+    </script>
     <!-- Google Fonts: Outfit & Playfair Display -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
