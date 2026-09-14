@@ -57,25 +57,34 @@
             <div class="header-utilities">
                 <!-- User Profile -->
                 <div class="utility-item dropdown-wrapper" id="userAccountWrapper">
-                    <button class="utility-btn" id="userMenuBtn" aria-label="User Account">
+                    <button class="utility-btn" id="userMenuBtn" aria-label="User Account" type="button"
+                        aria-expanded="false">
                         <i class="fa-regular fa-user"></i>
-                        <span class="utility-label">Account</span>
+                        <span class="utility-label" id="userAccountLabel">Account</span>
                     </button>
                     <div class="utility-dropdown" id="userDropdown">
                         <div class="dropdown-header">
-                            <p class="dropdown-title">Welcome to PRETUTE</p>
-                            <p class="dropdown-subtitle">Access your account & orders</p>
+                            <p class="dropdown-title" id="userDropdownTitle">Welcome to PRETUTE</p>
+                            <p class="dropdown-subtitle" id="userDropdownSubtitle">Access your account & orders</p>
+                        </div>
+                        <div id="customerDropdownSession">
+                            <!-- Populated dynamically if customer is signed in -->
                         </div>
                         <div class="dropdown-divider"></div>
                         <a href="#login" class="dropdown-link btn-login" id="loginBtn">Sign In / Register</a>
+                        <a href="#profile" class="dropdown-link" id="profileLink" style="display: none;"><i
+                                class="fa-solid fa-id-badge"></i> My Profile & Details</a>
                         <a href="#orders" class="dropdown-link" id="ordersLink"><i class="fa-solid fa-box-open"></i> My
                             Orders</a>
                         <a href="#wishlist" class="dropdown-link" id="wishlistLink"><i class="fa-regular fa-heart"></i>
                             My Wishlist</a>
+                        <a href="#refund-policy" class="dropdown-link" id="refundPolicyLink"><i
+                                class="fa-solid fa-shield-halved"></i> Refund Policy & Damage Video</a>
                         <div class="dropdown-divider"></div>
-                        <a href="admin.html" target="_blank" class="dropdown-link"
-                            style="color: var(--color-primary); font-weight: 600;"><i
-                                class="fa-solid fa-shield-halved"></i> Admin Back Panel</a>
+                        <a href="admin.html" class="dropdown-link admin-link" id="adminPanelLink"
+                            title="Access Admin Back Panel">
+                            <i class="fa-solid fa-shield-halved"></i> Admin Back Panel
+                        </a>
                     </div>
                 </div>
 
@@ -102,7 +111,6 @@
         <!-- Desktop Navigation Bar -->
         <nav class="desktop-navigation" id="desktopNav">
             <ul class="nav-links">
-
                 <li><a href="#home" class="nav-link active">Home</a></li>
                 <li><a href="#services" class="nav-link">Services</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
@@ -110,6 +118,7 @@
                 <li><a href="#why-us" class="nav-link">Why Us</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
                 <li><a href="#cart" class="nav-link"><i class="fa-solid fa-bag-shopping"></i> Cart</a></li>
+            </ul>
         </nav>
 
         <!-- Mobile Navigation Menu Sidebar -->
@@ -122,8 +131,6 @@
                 </button>
             </div>
             <ul class="mobile-nav-links">
-
-
                 <li><a href="#home" class="mob-link"><i class="fa-solid fa-house"></i> Home</a></li>
                 <li><a href="#services" class="mob-link"><i class="fa-solid fa-briefcase"></i> Services</a></li>
                 <li><a href="#about" class="mob-link"><i class="fa-solid fa-circle-info"></i> About</a></li>
@@ -131,7 +138,31 @@
                 <li><a href="#why-us" class="mob-link"><i class="fa-solid fa-circle-check"></i> Why Us</a></li>
                 <li><a href="#contact" class="mob-link"><i class="fa-solid fa-envelope"></i> Contact</a></li>
                 <li><a href="#cart" class="mob-link"><i class="fa-solid fa-bag-shopping"></i> Cart</a></li>
-
+                <li style="border-top: 1px solid var(--color-border); margin-top: 8px; padding-top: 8px;">
+                    <a href="admin.html" class="mob-link" style="color: var(--color-primary); font-weight: 700;">
+                        <i class="fa-solid fa-shield-halved"></i> Admin Back Panel
+                    </a>
+                </li>
+                <li>
+                    <a href="#login" class="mob-link" id="mobLoginLink">
+                        <i class="fa-regular fa-user"></i> Sign In / Account
+                    </a>
+                </li>
+                <li>
+                    <a href="#profile" class="mob-link" id="mobProfileLink" style="display: none;">
+                        <i class="fa-solid fa-id-badge"></i> My Profile & Details
+                    </a>
+                </li>
+                <li>
+                    <a href="#orders" class="mob-link" id="mobOrdersLink">
+                        <i class="fa-solid fa-box-open"></i> My Orders
+                    </a>
+                </li>
+                <li>
+                    <a href="#refund-policy" class="mob-link" id="mobRefundPolicyLink">
+                        <i class="fa-solid fa-shield-halved"></i> Refund & Damage Video Policy
+                    </a>
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <p>Support: support@pretute.com</p>
@@ -153,6 +184,28 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
+
+        <!-- ================= WORDPRESS DYNAMIC STORE START ================= -->
+    <main class="store-container" style="max-width: 1200px; margin: 30px auto; padding: 0 20px;">
+        
+        <!-- Shop By Category Section -->
+        <section class="category-section" style="margin-bottom: 50px;">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 2rem; color: #1e293b; margin-bottom: 20px; text-align: center;">Shop by Category</h2>
+            <div id="category-container" class="grid-layout">
+                <p style="text-align: center; grid-column: 1/-1;">Categories load ho rahi hain...</p>
+            </div>
+        </section>
+
+        <!-- Dynamic Products Section -->
+        <section class="products-section">
+            <h2 id="products-heading" style="font-family: 'Playfair Display', serif; font-size: 2rem; color: #1e293b; margin-bottom: 20px; text-align: center;">Our Products</h2>
+            <div id="product-container" class="grid-layout">
+                <p style="text-align: center; grid-column: 1/-1;">Products load ho rahe hain...</p>
+            </div>
+        </section>
+
+    </main>
+    <!-- ================= WORDPRESS DYNAMIC STORE END ================= -->
 
         <!-- Cart Drawer Body -->
         <div class="drawer-body" id="cartDrawerBody">
@@ -188,10 +241,451 @@
         </div>
     </div>
 
+    <!-- Customer Authentication Modal (Sign In / Register) -->
+    <div class="custom-modal-overlay" id="customerAuthModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true">
+            <button class="custom-modal-close" id="closeCustomerAuthBtn"
+                aria-label="Close Authentication Modal">&times;</button>
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="authTabSignIn">Sign In</button>
+                <button type="button" class="auth-tab-btn" id="authTabRegister">Create Account</button>
+            </div>
+
+            <!-- Sign In Form -->
+            <form id="customerSignInForm">
+                <div class="auth-input-group">
+                    <label for="custLoginEmail">Email Address or Mobile</label>
+                    <input type="text" id="custLoginEmail" required placeholder="name@example.com or 10-digit mobile">
+                </div>
+                <div class="auth-input-group">
+                    <label for="custLoginPassword">Password</label>
+                    <input type="password" id="custLoginPassword" required placeholder="Enter your password">
+                </div>
+                <div id="customerSignInErrorMsg"
+                    style="display: none; color: #ef4444; font-size: 0.82rem; margin-bottom: 10px; font-weight: 600;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; font-weight: 600;">Sign In
+                    to My Account</button>
+                <button type="button" class="btn btn-outline btn-block" id="demoCustomerLoginBtn"
+                    style="margin-top: 10px; padding: 10px; font-size: 0.85rem; display: flex; align-items: center; justify-content: center; gap: 8px; border-color: var(--color-primary); color: var(--color-primary);">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Quick Demo Login (customer@pretute.com)
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="customerRegisterForm" style="display: none;">
+                <div class="auth-input-group">
+                    <label for="custRegName">Full Name</label>
+                    <input type="text" id="custRegName" required placeholder="Your full name">
+                </div>
+                <div class="auth-input-group">
+                    <label for="custRegEmail">Email Address</label>
+                    <input type="email" id="custRegEmail" required placeholder="name@example.com">
+                </div>
+                <div class="auth-input-group">
+                    <label for="custRegPhone">Mobile Number</label>
+                    <input type="tel" id="custRegPhone" required placeholder="10-digit mobile number">
+                </div>
+                <div class="auth-input-group">
+                    <label for="custRegPassword">Create Password</label>
+                    <input type="password" id="custRegPassword" required placeholder="Minimum 6 characters">
+                </div>
+                <div id="customerRegisterErrorMsg"
+                    style="display: none; color: #ef4444; font-size: 0.82rem; margin-bottom: 10px; font-weight: 600;">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; font-weight: 600;">Create
+                    Free Account</button>
+            </form>
+
+            <!-- Admin Back Panel Shortcut Box -->
+            <div class="auth-admin-callout">
+                <div class="auth-admin-callout-text">
+                    <strong>Store Administrator?</strong>
+                    <span>Access back panel to manage orders & inventory</span>
+                </div>
+                <a href="admin.html" class="auth-admin-btn" id="authModalAdminBtn">
+                    <i class="fa-solid fa-shield-halved"></i> Admin Panel
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Orders Modal -->
+    <div class="custom-modal-overlay" id="customerOrdersModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true" style="max-width: 600px;">
+            <button class="custom-modal-close" id="closeCustomerOrdersBtn"
+                aria-label="Close Orders Modal">&times;</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <div
+                    style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255, 91, 127, 0.12); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div>
+                    <h3 style="color: var(--color-navy); margin: 0; font-size: 1.25rem;">My Orders</h3>
+                    <p style="color: var(--color-navy-light); font-size: 0.82rem; margin: 0;">Track your current
+                        packages and review order history</p>
+                </div>
+            </div>
+            <div id="customerOrdersContainer">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Profile & Details Modal -->
+    <div class="custom-modal-overlay" id="customerProfileModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true" style="max-width: 560px;">
+            <button class="custom-modal-close" id="closeCustomerProfileBtn"
+                aria-label="Close Profile Modal">&times;</button>
+            <div class="profile-header-card">
+                <div class="profile-avatar-circle" id="profileAvatarCircle">MS</div>
+                <div>
+                    <h3 id="profileNameDisplay" style="color: var(--color-navy); margin: 0; font-size: 1.25rem;">Mitalee
+                        Sharma</h3>
+                    <p id="profileEmailDisplay" style="color: var(--color-navy-light); font-size: 0.85rem; margin: 0;">
+                        customer@pretute.com</p>
+                    <span class="member-badge"><i class="fa-solid fa-crown"></i> Verified PRETUTE Member</span>
+                </div>
+            </div>
+
+            <!-- Profile Nav Tabs -->
+            <div class="profile-nav-tabs">
+                <button type="button" class="profile-tab-btn active" data-ptab="profilePersonalTab"><i
+                        class="fa-solid fa-user"></i> Personal Info</button>
+                <button type="button" class="profile-tab-btn" data-ptab="profileAddressTab"><i
+                        class="fa-solid fa-location-dot"></i> Saved Address</button>
+                <button type="button" class="profile-tab-btn" data-ptab="profileStatsTab"><i
+                        class="fa-solid fa-chart-pie"></i> Account Stats</button>
+            </div>
+
+            <!-- Tab 1: Personal Info -->
+            <div class="profile-tab-pane active" id="profilePersonalTab">
+                <form id="profilePersonalForm">
+                    <div class="auth-input-group">
+                        <label for="profileFullName">Full Name</label>
+                        <input type="text" id="profileFullName" required>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" required>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="profilePhone">Phone / Mobile Number</label>
+                        <input type="tel" id="profilePhone" required placeholder="10-digit mobile">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"
+                        style="padding: 10px; font-weight: 600;">Save Personal Details</button>
+                </form>
+            </div>
+
+            <!-- Tab 2: Saved Address -->
+            <div class="profile-tab-pane" id="profileAddressTab" style="display: none;">
+                <form id="profileAddressForm">
+                    <div class="auth-input-group">
+                        <label for="profileStreet">House / Flat No. & Street Address</label>
+                        <textarea id="profileStreet" rows="2" placeholder="e.g. Flat 402, Lotus Orchid, Palm Beach Road"
+                            required
+                            style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.9rem; resize: none;"></textarea>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="auth-input-group">
+                            <label for="profileCity">City</label>
+                            <input type="text" id="profileCity" required placeholder="e.g. Mumbai">
+                        </div>
+                        <div class="auth-input-group">
+                            <label for="profilePincode">Pincode</label>
+                            <input type="text" id="profilePincode" required placeholder="e.g. 400705" maxlength="6">
+                        </div>
+                    </div>
+                    <div class="auth-input-group">
+                        <label for="profileState">State</label>
+                        <input type="text" id="profileState" placeholder="e.g. Maharashtra">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block"
+                        style="padding: 10px; font-weight: 600;">Update Delivery Address</button>
+                </form>
+            </div>
+
+            <!-- Tab 3: Account Stats -->
+            <div class="profile-tab-pane" id="profileStatsTab" style="display: none;">
+                <div class="stats-mini-grid">
+                    <div class="stat-mini-card">
+                        <span class="stat-num" id="statOrdersCount">0</span>
+                        <span class="stat-lbl">Total Orders</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <span class="stat-num" id="statWishlistCount">0</span>
+                        <span class="stat-lbl">Wishlist Items</span>
+                    </div>
+                    <div class="stat-mini-card">
+                        <span class="stat-num" id="statSavedSavings">₹0</span>
+                        <span class="stat-lbl">Promo Savings</span>
+                    </div>
+                </div>
+                <div class="profile-actions-row">
+                    <button type="button" class="btn btn-outline" id="profileOpenOrdersBtn" style="flex: 1;"><i
+                            class="fa-solid fa-box-open"></i> View My Orders</button>
+                    <button type="button" class="btn btn-outline btn-signout" id="profileSignOutBtn"
+                        style="color: #ef4444; border-color: #fca5a5;"><i
+                            class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cancel Order Confirmation Modal -->
+    <div class="custom-modal-overlay" id="cancelOrderModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true" style="max-width: 480px;">
+            <button class="custom-modal-close" id="closeCancelOrderBtn" aria-label="Close Cancel Modal">&times;</button>
+            <div style="text-align: center; margin-bottom: 16px;">
+                <div
+                    style="width: 50px; height: 50px; border-radius: 50%; background: #fee2e2; color: #ef4444; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-bottom: 8px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 style="color: var(--color-navy); margin: 0; font-size: 1.25rem;">Cancel Order?</h3>
+                <p style="color: var(--color-navy-light); font-size: 0.85rem; margin-top: 4px;">Are you sure you want to
+                    cancel Order <strong id="cancelTargetOrderId" style="color: var(--color-navy);">PRT-123456</strong>?
+                </p>
+            </div>
+
+            <form id="confirmCancelOrderForm">
+                <input type="hidden" id="cancelOrderIdHidden">
+                <div class="auth-input-group">
+                    <label for="cancelReasonSelect">Please select a reason for cancellation *</label>
+                    <select id="cancelReasonSelect" required
+                        style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; background: #fff;">
+                        <option value="">-- Choose Reason --</option>
+                        <option value="Ordered by mistake / accidental order">Ordered by mistake / accidental order
+                        </option>
+                        <option value="Found a better deal / cheaper elsewhere">Found a better deal / cheaper elsewhere
+                        </option>
+                        <option value="Need to change delivery address or phone number">Need to change delivery address
+                            or phone number</option>
+                        <option value="Selected incorrect size, variant, or quantity">Selected incorrect size, variant,
+                            or quantity</option>
+                        <option value="Delivery date takes too long">Delivery date takes too long</option>
+                        <option value="Change of mind">Change of mind</option>
+                        <option value="Other reasons">Other reasons</option>
+                    </select>
+                </div>
+                <div class="auth-input-group">
+                    <label for="cancelReasonNotes">Additional comments (optional)</label>
+                    <textarea id="cancelReasonNotes" rows="2" placeholder="Tell us more about why you are cancelling..."
+                        style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; resize: none;"></textarea>
+                </div>
+                <div
+                    style="background: #f8fafc; border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 16px; font-size: 0.8rem; color: #475569;">
+                    <i class="fa-solid fa-info-circle" style="color: var(--color-primary);"></i> If you paid online via
+                    UPI/Card, the refund will be initiated instantly back to your payment account.
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-outline" id="abortCancelOrderBtn" style="flex: 1;">Keep
+                        Order</button>
+                    <button type="submit" class="btn btn-primary" id="confirmCancelSubmitBtn"
+                        style="flex: 1; background: #ef4444; border-color: #ef4444;">Confirm Cancellation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Damage Video & Refund Request Modal -->
+    <div class="custom-modal-overlay" id="damageRefundModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true" style="max-width: 580px;">
+            <button class="custom-modal-close" id="closeDamageRefundBtn"
+                aria-label="Close Refund Modal">&times;</button>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+                <div
+                    style="width: 42px; height: 42px; border-radius: 50%; background: #fee2e2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                    <i class="fa-solid fa-video"></i>
+                </div>
+                <div>
+                    <h3 style="color: var(--color-navy); margin: 0; font-size: 1.25rem;">Return & Refund Claim</h3>
+                    <p style="color: var(--color-navy-light); font-size: 0.82rem; margin: 0;">Order <strong
+                            id="refundTargetOrderId" style="color: var(--color-navy);">PRT-123456</strong></p>
+                </div>
+            </div>
+
+            <!-- Mandatory Unboxing Video Alert -->
+            <div class="policy-notice-alert">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    <strong>Mandatory Unboxing Video Requirement:</strong>
+                    <p>To approve a refund or replacement for damaged, broken, or missing items, a clear and continuous
+                        360° unboxing video recorded from the start of package unsealing is required.</p>
+                </div>
+            </div>
+
+            <form id="damageRefundForm">
+                <input type="hidden" id="refundOrderIdHidden">
+                <div class="auth-input-group">
+                    <label for="refundReasonSelect">Issue Category *</label>
+                    <select id="refundReasonSelect" required
+                        style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; background: #fff;">
+                        <option value="">-- Select issue reason --</option>
+                        <option value="Item Damaged / Broken in Transit">Item Damaged / Broken in Transit</option>
+                        <option value="Defective / Quality Issue">Defective / Quality Issue</option>
+                        <option value="Wrong Item or Color Received">Wrong Item or Color Received</option>
+                        <option value="Missing Parts / Accessories">Missing Parts / Accessories</option>
+                        <option value="Fit / Size Exchange Needed">Fit / Size Exchange Needed</option>
+                    </select>
+                </div>
+
+                <div class="auth-input-group">
+                    <label for="refundDesc">Describe the Damage or Issue in Detail *</label>
+                    <textarea id="refundDesc" rows="3" required
+                        placeholder="Please describe exactly what was damaged, missing, or defective..."
+                        style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; resize: none;"></textarea>
+                </div>
+
+                <!-- Unboxing Video Attachment Section -->
+                <div class="auth-input-group">
+                    <label style="display: flex; justify-content: space-between;">
+                        <span><i class="fa-solid fa-file-video" style="color: var(--color-primary);"></i> Upload
+                            Unboxing Video *</span>
+                        <span style="font-size: 0.75rem; color: #64748b;">Max 50MB (MP4, MOV, WEBM)</span>
+                    </label>
+                    <div class="file-upload-dropzone" id="videoDropzone">
+                        <input type="file" id="refundVideoFileInput"
+                            accept="video/mp4,video/quicktime,video/webm,video/*" style="display: none;">
+                        <div id="videoDropzonePrompt" class="dropzone-content">
+                            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                            <p class="dropzone-title">Click to upload 360° Unboxing Video</p>
+                            <span class="dropzone-sub">Shows package condition and parcel seal opening</span>
+                        </div>
+                        <div id="videoPreviewContainer" style="display: none; padding: 10px; text-align: center;">
+                            <video id="refundVideoPreview" controls
+                                style="max-height: 180px; width: 100%; border-radius: 6px; background: #000;"></video>
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                                <span id="videoFileNameDisplay"
+                                    style="font-size: 0.8rem; color: var(--color-navy); font-weight: 600;">video.mp4</span>
+                                <button type="button" id="removeVideoBtn" class="btn-text-danger"
+                                    style="font-size: 0.8rem; color: #ef4444; cursor: pointer;"><i
+                                        class="fa-solid fa-trash"></i> Remove</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="auth-input-group">
+                    <label for="refundVideoLink">Or Provide Video Cloud / Drive Link (Optional alternative)</label>
+                    <input type="url" id="refundVideoLink"
+                        placeholder="https://drive.google.com/... or YouTube unlisted link">
+                </div>
+
+                <!-- Damage Photos Attachment -->
+                <div class="auth-input-group">
+                    <label for="refundPhotoFileInput"><i class="fa-solid fa-camera"
+                            style="color: var(--color-primary);"></i> Add Close-Up Damage Photos (Optional)</label>
+                    <input type="file" id="refundPhotoFileInput" accept="image/*" multiple
+                        style="font-size: 0.82rem; padding: 4px 0;">
+                    <div id="refundPhotoThumbnails" class="photo-thumbnails-grid"
+                        style="display: none; margin-top: 6px;"></div>
+                </div>
+
+                <!-- Refund Preference -->
+                <div class="auth-input-group">
+                    <label for="refundPayoutMode">Refund Preference</label>
+                    <select id="refundPayoutMode"
+                        style="width: 100%; padding: 10px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.88rem; background: #fff;">
+                        <option value="Original Payment Method">Refund to Original Payment Method</option>
+                        <option value="UPI Direct Transfer">Instant UPI Direct Transfer (Recommended)</option>
+                        <option value="Replacement Item">Send Free Replacement Item</option>
+                        <option value="Store Credit Voucher">Store Credit Voucher (+5% Extra Bonus)</option>
+                    </select>
+                </div>
+
+                <div class="auth-input-group" id="refundUpiGroup" style="display: none;">
+                    <label for="refundUpiId">Your UPI ID for Instant Credit *</label>
+                    <input type="text" id="refundUpiId" placeholder="e.g. yourname@okaxis or mobile@paytm">
+                </div>
+
+                <div style="margin: 14px 0;">
+                    <label
+                        style="display: flex; gap: 8px; align-items: flex-start; font-size: 0.82rem; color: var(--color-navy); cursor: pointer;">
+                        <input type="checkbox" id="refundConfirmCheck" required style="margin-top: 3px;">
+                        <span>I confirm that the attached video is genuine, unedited, and shows the parcel opening from
+                            its original sealed state.</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block" style="padding: 12px; font-weight: 600;">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Return & Refund Claim
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Refund & Damage Video Policy Modal -->
+    <div class="custom-modal-overlay" id="refundPolicyModal">
+        <div class="custom-modal-card" role="dialog" aria-modal="true" style="max-width: 620px;">
+            <button class="custom-modal-close" id="closeRefundPolicyBtn"
+                aria-label="Close Policy Modal">&times;</button>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div
+                    style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 91, 127, 0.12); color: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 style="color: var(--color-navy); margin: 0; font-size: 1.3rem;">Return, Refund & Damage Policy
+                    </h3>
+                    <p style="color: var(--color-navy-light); font-size: 0.85rem; margin: 0;">Transparent, fair terms
+                        for our parents and families</p>
+                </div>
+            </div>
+
+            <div class="policy-pillars-grid">
+                <div class="policy-pillar-card">
+                    <div class="pillar-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h5>7-Day Return Window</h5>
+                    <p>You have 7 days from the delivery date to report transit damage or initiate a return.</p>
+                </div>
+                <div class="policy-pillar-card">
+                    <div class="pillar-icon"><i class="fa-solid fa-video"></i></div>
+                    <h5>Mandatory Unboxing Video</h5>
+                    <p>Continuous video showing sealed package opening is required for damage or missing item claims.
+                    </p>
+                </div>
+                <div class="policy-pillar-card">
+                    <div class="pillar-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+                    <h5>24h Fast Inspection</h5>
+                    <p>Our claims team reviews uploaded video evidence within 24 business hours.</p>
+                </div>
+                <div class="policy-pillar-card">
+                    <div class="pillar-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+                    <h5>100% Full Refund</h5>
+                    <p>Refunds are credited directly to your bank account, UPI, or original card within 3-5 days.</p>
+                </div>
+            </div>
+
+            <div class="policy-guidelines-box">
+                <h4
+                    style="font-size: 0.95rem; color: var(--color-navy); margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-circle-info" style="color: var(--color-primary);"></i> How to Record a Valid
+                    Unboxing Video:
+                </h4>
+                <ul class="policy-steps-list">
+                    <li><strong>Start before opening:</strong> Record all 4 sides of the outer shipping box or envelope
+                        showing it is completely sealed and untampered.</li>
+                    <li><strong>Shipping label clear:</strong> Point the camera at the shipping label so your Name and
+                        Order ID are clearly readable.</li>
+                    <li><strong>Continuous recording:</strong> Cut open the tape and unbox the products in one
+                        uninterrupted video (no pauses, cuts, or edits).</li>
+                    <li><strong>Show the issue:</strong> If an item is broken, damaged, or defective, zoom in on the
+                        defect while recording.</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 18px;">
+                <button type="button" class="btn btn-primary" id="policyAcknowledgeBtn" style="padding: 10px 24px;">I
+                    Understand</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main View Wrapper -->
     <main class="main-content" id="mainContent">
 
-        <!-- ==================== VIEW: HOME ==================== -->
         <!-- ==================== VIEW: HOME ==================== -->
         <section id="homeView" class="page-view active">
 
@@ -240,6 +734,42 @@
                     <div class="carousel-dots" id="carouselDots">
                         <span class="dot active" data-slide="0"></span>
                         <span class="dot" data-slide="1"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Proposition / Services Bar -->
+            <div class="services-section" id="services">
+                <div class="section-container">
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                            <div class="service-info">
+                                <h4>Express Shipping</h4>
+                                <p>Free delivery on all orders above ₹1,499</p>
+                            </div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa-solid fa-leaf"></i></div>
+                            <div class="service-info">
+                                <h4>100% GOTS Organic</h4>
+                                <p>Toxin-free, natural fabrics for delicate skin</p>
+                            </div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                            <div class="service-info">
+                                <h4>30-Day Easy Returns</h4>
+                                <p>Hassle-free replacement & full refunds</p>
+                            </div>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fa-solid fa-headset"></i></div>
+                            <div class="service-info">
+                                <h4>Concierge Care</h4>
+                                <p>Expert parenting advice & dedicated support</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -379,7 +909,8 @@
             </div>
 
             <!-- Brand Philosophy Banner -->
-            <div class="philosophy-section">
+            <div class="philosophy-section" id="why-us">
+                <div id="about"></div>
                 <div class="section-container philosophy-grid">
                     <div class="philosophy-card">
                         <div class="icon-wrapper"><i class="fa-solid fa-seedling"></i></div>
@@ -398,6 +929,67 @@
                         <h4>Artisan Handcrafted</h4>
                         <p>Our wooden stackers and fabric dolls are made in small batches by global artisan families
                             with love.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Reviews Showcase -->
+            <div class="reviews-section" id="reviews">
+                <div class="section-container">
+                    <div class="section-header" style="text-align: center; margin-bottom: 24px;">
+                        <h2 class="section-title">Loved by Thousands of Parents</h2>
+                        <p style="color: var(--color-navy-light); font-size: 1rem;">Real reviews from our certified
+                            customers across India</p>
+                    </div>
+                    <div class="reviews-grid">
+                        <div class="review-card">
+                            <div class="review-rating-stars">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p>"The organic ribbed romper is by far the softest baby clothing we own. It washes
+                                beautifully without shrinking or losing its shape. Highly recommended!"</p>
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">SM</div>
+                                <div class="reviewer-meta">
+                                    <h5>Sarah Malhotra</h5>
+                                    <span>Verified Buyer • Mumbai</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-rating-stars">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p>"The wooden rainbow stacker is exquisite. Real solid wood, no sharp edges, and completely
+                                non-toxic. My 2-year-old creates amazing structures every single day."</p>
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">DL</div>
+                                <div class="reviewer-meta">
+                                    <h5>David Lalwani</h5>
+                                    <span>Verified Buyer • Bengaluru</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="review-card">
+                            <div class="review-rating-stars">
+                                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                    class="fa-solid fa-star"></i>
+                            </div>
+                            <p>"AeroGlide stroller folded in one click and fit straight into the flight cabin overhead
+                                bin. Best parenting investment we made this year!"</p>
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">PG</div>
+                                <div class="reviewer-meta">
+                                    <h5>Priya Gupta</h5>
+                                    <span>Verified Buyer • Delhi NCR</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -491,20 +1083,54 @@
                             </button>
                         </div>
 
+                        <!-- Delivery Options & Pincode Checker Widget -->
+                        <div class="delivery-estimator-box" id="detailDeliveryBox">
+                            <div class="estimator-header">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Delivery Options & Pincode Check</span>
+                            </div>
+                            <div class="estimator-input-row">
+                                <input type="text" id="pincodeCheckInput" placeholder="Enter 6-digit Pincode"
+                                    maxlength="6" pattern="[0-9]{6}">
+                                <button type="button" id="pincodeCheckBtn" class="btn-check-pincode">Check</button>
+                            </div>
+                            <div class="estimator-result" id="pincodeCheckResult">
+                                <div class="delivery-date-highlight">
+                                    <i class="fa-solid fa-truck-fast"></i>
+                                    <div>
+                                        <span class="est-label">Estimated Delivery by:</span>
+                                        <strong class="est-date" id="pincodeEstDate">Calculating...</strong>
+                                        <p class="est-detail">Order within <span id="deliveryCountdownTimer"
+                                                class="countdown-span">04h 32m</span> for today's dispatch</p>
+                                    </div>
+                                </div>
+                                <div class="delivery-badges-row">
+                                    <span class="del-badge"><i class="fa-solid fa-check"></i> Free Shipping on
+                                        ₹1,499+</span>
+                                    <span class="del-badge"><i class="fa-solid fa-money-bill-wave"></i> Cash on
+                                        Delivery</span>
+                                    <span class="del-badge"><i class="fa-solid fa-rotate-left"></i> 7-Day Returns</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Perks Info -->
                         <div class="product-perks">
                             <div class="perk-item">
                                 <i class="fa-solid fa-truck-fast"></i>
                                 <div>
-                                    <strong>Free & Fast Delivery</strong>
-                                    <span>Shipped in eco-friendly packaging within 2-3 business days.</span>
+                                    <strong>Express & Standard Delivery</strong>
+                                    <span>Dispatched in eco-friendly packaging with live SMS/email tracking.</span>
                                 </div>
                             </div>
-                            <div class="perk-item">
-                                <i class="fa-solid fa-rotate-left"></i>
+                            <div class="perk-item perk-policy-trigger" id="detailRefundPolicyPerk"
+                                style="cursor: pointer;" title="Click to view policy">
+                                <i class="fa-solid fa-shield-halved" style="color: var(--color-primary);"></i>
                                 <div>
-                                    <strong>Easy 30-Day Returns</strong>
-                                    <span>No questions asked, pre-paid return label included in the box.</span>
+                                    <strong>7-Day Returns & Damage Claim Guarantee</strong>
+                                    <span>Mandatory 360° unboxing video ensures instant refund or replacement. <span
+                                            style="text-decoration: underline; color: var(--color-primary); font-weight: 600;">View
+                                            Policy &rarr;</span></span>
                                 </div>
                             </div>
                         </div>
@@ -648,6 +1274,19 @@
                                 <span>Shipping Cost</span>
                                 <span id="cartPageShipping" class="text-success">FREE</span>
                             </div>
+                            <div class="summary-row"
+                                style="font-weight: 700; font-size: 1.15rem; color: var(--color-navy); padding-top: 6px; border-top: 1px solid var(--color-border); margin-top: 6px;">
+                                <span>Total Amount</span>
+                                <span id="cartPageGrandTotal">₹0.00</span>
+                            </div>
+                            <!-- Estimated Delivery Badge in Summary -->
+                            <div class="checkout-delivery-date-card" id="checkoutDeliveryDateCard">
+                                <i class="fa-solid fa-truck-fast"></i>
+                                <div>
+                                    <span class="lbl">Estimated Delivery Date:</span>
+                                    <strong id="checkoutEstDeliveryDate" class="val">Calculating...</strong>
+                                </div>
+                            </div>
                             <div class="divider"></div>
 
                             <!-- Coupon Code Application Box -->
@@ -661,6 +1300,11 @@
                             <!-- Customer & Delivery Information (Production Ready) -->
                             <div class="checkout-customer-section"
                                 style="margin: 18px 0; padding-top: 14px; border-top: 1px dashed var(--color-border);">
+                                <div id="checkoutAutofillNotice"
+                                    style="display: none; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 12px; font-weight: 500;">
+                                    <i class="fa-solid fa-circle-check"></i> Details auto-filled from your signed-in
+                                    PRETUTE account.
+                                </div>
                                 <h4
                                     style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--color-navy); display: flex; align-items: center; gap: 8px;">
                                     <i class="fa-solid fa-truck" style="color: var(--color-primary);"></i> Delivery &
@@ -732,10 +1376,17 @@
                         <div class="summary-receipt">
                             <p><strong>Order ID:</strong> <span id="successOrderId">PRT-7810091-893</span></p>
                             <p><strong>Customer:</strong> <span id="successCustomerName">Customer</span></p>
+                            <p><strong>Estimated Delivery:</strong> <span id="successDeliveryDate"
+                                    style="color: #15803d; font-weight: 700;">Calculating...</span></p>
                             <p><strong>Amount Paid:</strong> <span id="successTotalPaid">₹0.00</span></p>
                             <p><strong>Payment Mode:</strong> <span id="successPaymentMode">Cash on Delivery</span></p>
                         </div>
-                        <button class="btn btn-primary" id="successCloseBtn">Continue Shopping</button>
+                        <div
+                            style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px;">
+                            <button class="btn btn-outline" id="successViewOrdersBtn"><i
+                                    class="fa-solid fa-box-open"></i> Track in My Orders</button>
+                            <button class="btn btn-primary" id="successCloseBtn">Continue Shopping</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -928,7 +1579,8 @@
                     <ul class="footer-links">
                         <li><a href="#contact">Contact Us</a></li>
                         <li><a href="#contact">Shipping & Deliveries</a></li>
-                        <li><a href="#contact">30-Day Returns</a></li>
+                        <li><a href="#refund-policy" id="footerRefundPolicyLink">Return & Refund Policy (Damage
+                                Video)</a></li>
                         <li><a href="admin.html" target="_blank"
                                 style="color: var(--color-primary); font-weight: 600;"><i class="fa-solid fa-gauge"></i>
                                 Admin Back Panel</a></li>
@@ -971,6 +1623,11 @@
     <script src="store-data.js"></script>
     <!-- Core App Logic -->
     <script src="app.js"></script>
+
+   
+        
+</body>
+</html>
 </body>
 
 </html>

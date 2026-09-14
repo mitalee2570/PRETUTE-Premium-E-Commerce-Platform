@@ -386,19 +386,33 @@ function applyStoreSettings() {
 }
 
 function initApp() {
-    // Scroll behavior
-    window.addEventListener("scroll", () => {
-        const header = document.getElementById("mainHeader");
+    // Scroll behavior - Hide sub-navigation (Home, Services, About, Reviews, etc.) on scroll down
+    const header = document.getElementById("mainHeader");
+    const handleScroll = () => {
+        if (!header) return;
         if (window.scrollY > 40) {
+            header.classList.add("scrolled");
             header.classList.add("sticky");
         } else {
+            header.classList.remove("scrolled");
             header.classList.remove("sticky");
         }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    // Logo click home trigger (scroll to top smoothly)
+    document.getElementById("logoLink")?.addEventListener("click", () => {
+        window.location.hash = "#home";
+        window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
-    // Logo click home trigger
-    document.getElementById("logoLink").addEventListener("click", () => {
-        window.location.hash = "#home";
+    // Home nav links click smooth scroll to top
+    document.querySelectorAll('a[href="#home"]').forEach(link => {
+        link.addEventListener("click", () => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
     });
 }
 
@@ -407,6 +421,16 @@ function setupRouter() {
         const hash = window.location.hash || "#home";
         let viewId = "homeView";
 
+        // Intercept Modal routes
+        if (hash === "#login") {
+            window.openCustomerAuthModal?.("signin");
+            return;
+        }
+        if (hash === "#orders") {
+            window.openCustomerOrdersModal?.();
+            return;
+        }
+
         // Hide all views first
         document.querySelectorAll(".page-view").forEach(v => {
             v.classList.remove("active");
@@ -414,7 +438,9 @@ function setupRouter() {
         });
 
         // Clear sub-elements
-        document.getElementById("searchSuggestions").classList.remove("active");
+        document.getElementById("searchSuggestions")?.classList.remove("active");
+
+        let targetScrollSection = null;
 
         // Parse Hash parameters
         if (hash === "#home") {
@@ -422,6 +448,12 @@ function setupRouter() {
             STATE.currentView = "home";
             renderHomeProducts();
             startCarouselAutoPlay();
+        } else if (hash === "#services" || hash === "#about" || hash === "#reviews" || hash === "#why-us") {
+            viewId = "homeView";
+            STATE.currentView = "home";
+            renderHomeProducts();
+            startCarouselAutoPlay();
+            targetScrollSection = hash.substring(1);
         } else if (hash.startsWith("#category/")) {
             viewId = "searchView";
             STATE.currentView = "category";
@@ -448,6 +480,18 @@ function setupRouter() {
             STATE.currentView = "wishlist";
             renderWishlist();
             stopCarouselAutoPlay();
+        } else if (hash === "#login") {
+            window.openCustomerAuthModal?.("signin");
+            return;
+        } else if (hash === "#profile") {
+            window.openCustomerProfileModal?.();
+            return;
+        } else if (hash === "#orders") {
+            window.openCustomerOrdersModal?.();
+            return;
+        } else if (hash === "#refund-policy") {
+            window.openRefundPolicyModal?.();
+            return;
         } else {
             // Default Fallback
             viewId = "homeView";
@@ -461,8 +505,17 @@ function setupRouter() {
             setTimeout(() => activeView.classList.add("active"), 50);
         }
 
-        // Scroll to top on navigation
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        // Scroll to target section or top
+        if (targetScrollSection) {
+            setTimeout(() => {
+                const targetEl = document.getElementById(targetScrollSection);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }, 100);
+        } else {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
 
         // Update Nav Menu Highlights
         updateActiveNavLinks(hash);
@@ -562,14 +615,22 @@ function createProductCard(prod) {
                 </div>
                 <span class="rating-score">${prod.rating}</span>
             </div>
+            <div class="card-delivery-badge">
+                <i class="fa-solid fa-truck-fast"></i> 2-4 Days Delivery
+            </div>
             <div class="card-price-row">
                 <div class="card-prices">
                     <span class="disc-price">₹${prod.price.toFixed(2)}</span>
                     <span class="orig-price">₹${prod.originalPrice.toFixed(2)}</span>
                 </div>
-                <button class="btn-add-cart-circle add-cart-trigger ${isPurchaseDisabled ? 'disabled' : ''}" ${isPurchaseDisabled ? 'disabled' : ''} data-id="${prod.id}" aria-label="${buttonTitle}" title="${buttonTitle}">
-                    <i class="fa-solid ${isPurchaseDisabled ? 'fa-ban' : 'fa-basket-shopping'}"></i>
-                </button>
+                <div class="card-actions-group">
+                    <button class="btn-card-buynow buynow-trigger ${isPurchaseDisabled ? 'disabled' : ''}" ${isPurchaseDisabled ? 'disabled' : ''} data-id="${prod.id}" title="Buy Now">
+                        <i class="fa-solid fa-bolt"></i> Buy Now
+                    </button>
+                    <button class="btn-add-cart-circle add-cart-trigger ${isPurchaseDisabled ? 'disabled' : ''}" ${isPurchaseDisabled ? 'disabled' : ''} data-id="${prod.id}" aria-label="${buttonTitle}" title="${buttonTitle}">
+                        <i class="fa-solid ${isPurchaseDisabled ? 'fa-ban' : 'fa-basket-shopping'}"></i>
+                    </button>
+                </div>
             </div>
         </div>
     `;
@@ -590,6 +651,17 @@ function createProductCard(prod) {
         }
         addToCart(prod.id, 1, prod.sizes[0] || "Standard");
         openCartDrawer();
+    });
+
+    card.querySelector(".buynow-trigger")?.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isPurchaseDisabled) {
+            showNotification(isUnavailable ? "This product is currently unavailable." : "This product is out of stock.", "warning");
+            return;
+        }
+        addToCart(prod.id, 1, prod.sizes[0] || "Standard");
+        window.location.hash = "#cart";
     });
 
     card.querySelector(".quickview-trigger").addEventListener("click", (e) => {
@@ -979,6 +1051,43 @@ function renderCartPage() {
     });
 
     calculateCartPricing();
+
+    // Auto-fill customer checkout details if signed in
+    const currentCust = (typeof StoreData !== 'undefined' && StoreData.getCurrentCustomer) ? StoreData.getCurrentCustomer() : null;
+    const autofillNotice = document.getElementById("checkoutAutofillNotice");
+    const nameInput = document.getElementById("custFullName");
+    const phoneInput = document.getElementById("custPhone");
+    const emailInput = document.getElementById("custEmail");
+    const addrInput = document.getElementById("custAddress");
+    const cityInput = document.getElementById("custCity");
+    const pinInput = document.getElementById("custPincode");
+
+    if (currentCust) {
+        if (autofillNotice) autofillNotice.style.display = "block";
+        if (nameInput && !nameInput.value) nameInput.value = currentCust.name || "";
+        if (phoneInput && !phoneInput.value) phoneInput.value = currentCust.phone || "";
+        if (emailInput && !emailInput.value) emailInput.value = currentCust.email || "";
+
+        const addr = currentCust.address || {};
+        if (addrInput && !addrInput.value) addrInput.value = addr.street || "";
+        if (cityInput && !cityInput.value) cityInput.value = addr.city || "";
+        if (pinInput && !pinInput.value) pinInput.value = addr.pincode || "";
+    } else {
+        if (autofillNotice) autofillNotice.style.display = "none";
+    }
+
+    // Live update of estimated delivery date in checkout summary
+    const checkoutDeliverySpan = document.getElementById("checkoutEstDeliveryDate");
+    if (checkoutDeliverySpan) {
+        const pin = (pinInput && pinInput.value) || localStorage.getItem("pretute_user_pincode") || "400705";
+        checkoutDeliverySpan.textContent = getCalculatedDeliveryString(pin);
+
+        pinInput?.addEventListener("input", () => {
+            if (pinInput.value.length === 6) {
+                checkoutDeliverySpan.textContent = getCalculatedDeliveryString(pinInput.value);
+            }
+        });
+    }
 }
 
 // Render Wishlist Page
@@ -1191,17 +1300,15 @@ function calculateCartPricing() {
     const grandTotalSpan = document.getElementById("cartPageGrandTotal");
     const itemsCountSpan = document.getElementById("cartPageItemsCount");
 
-    if (!subtotalSpan || !savingsSpan || !grandTotalSpan || !itemsCountSpan) return;
-
     const totalCount = STATE.cart.reduce((sum, item) => sum + item.quantity, 0);
-    itemsCountSpan.textContent = totalCount;
+    if (itemsCountSpan) itemsCountSpan.textContent = totalCount;
 
     const subtotal = STATE.cart.reduce((sum, item) => {
-        const prod = PRODUCT_CATALOG.find(p => p.id === item.productId);
+        const prod = PRODUCT_CATALOG.find(p => String(p.id) === String(item.productId));
         return sum + (prod ? prod.price * item.quantity : 0);
     }, 0);
 
-    subtotalSpan.textContent = `₹${subtotal.toFixed(2)}`;
+    if (subtotalSpan) subtotalSpan.textContent = `₹${subtotal.toFixed(2)}`;
 
     let discountSavings = 0;
 
@@ -1225,7 +1332,7 @@ function calculateCartPricing() {
             else if (promo.type === "category_percent") {
                 // only apply discount to matching category items
                 const catTotal = STATE.cart.reduce((sum, item) => {
-                    const prod = PRODUCT_CATALOG.find(p => p.id === item.productId);
+                    const prod = PRODUCT_CATALOG.find(p => String(p.id) === String(item.productId));
                     if (prod && prod.category === promo.category) {
                         return sum + (prod.price * item.quantity);
                     }
@@ -1235,7 +1342,7 @@ function calculateCartPricing() {
             }
             else if (promo.type === "min_spend_maternity") {
                 const maternityTotal = STATE.cart.reduce((sum, item) => {
-                    const prod = PRODUCT_CATALOG.find(p => p.id === item.productId);
+                    const prod = PRODUCT_CATALOG.find(p => String(p.id) === String(item.productId));
                     if (prod && prod.category === "maternity") {
                         return sum + (prod.price * item.quantity);
                     }
@@ -1257,10 +1364,10 @@ function calculateCartPricing() {
         }
     }
 
-    savingsSpan.textContent = `-₹${discountSavings.toFixed(2)}`;
+    if (savingsSpan) savingsSpan.textContent = `-₹${discountSavings.toFixed(2)}`;
 
     const finalTotal = Math.max(0, subtotal - discountSavings);
-    grandTotalSpan.textContent = `₹${finalTotal.toFixed(2)}`;
+    if (grandTotalSpan) grandTotalSpan.textContent = `₹${finalTotal.toFixed(2)}`;
 }
 
 // Coupon Form Actions
@@ -1441,6 +1548,10 @@ function setupCheckoutSubmission() {
             };
         });
 
+        const estDeliveryStr = getCalculatedDeliveryString(pinInput ? pinInput.value : "");
+        const successDeliverySpan = document.getElementById("successDeliveryDate");
+        if (successDeliverySpan) successDeliverySpan.textContent = estDeliveryStr;
+
         if (typeof StoreData !== 'undefined' && StoreData.createOrder) {
             StoreData.createOrder({
                 id: randomId,
@@ -1454,7 +1565,8 @@ function setupCheckoutSubmission() {
                 couponUsed: STATE.promoApplied,
                 total: grandTotal,
                 paymentMethod: paymentMethod,
-                status: "Pending"
+                status: "Pending",
+                estimatedDelivery: estDeliveryStr
             });
 
             // Automatically decrement product stock in StoreData
@@ -1471,25 +1583,39 @@ function setupCheckoutSubmission() {
         overlay.classList.add("active");
     });
 
+    const viewOrdersBtn = document.getElementById("successViewOrdersBtn");
+    viewOrdersBtn?.addEventListener("click", () => {
+        STATE.cart = [];
+        STATE.promoApplied = null;
+        localStorage.removeItem('pretute_cart');
+        localStorage.removeItem('pretute_promo');
+        updateBadges();
+        overlay.classList.remove("active");
+        window.openCustomerOrdersModal?.();
+    });
+
     closeBtn.addEventListener("click", () => {
-        // Clear cart and customer inputs
+        // Clear cart and reset
         STATE.cart = [];
         STATE.promoApplied = null;
         localStorage.removeItem('pretute_cart');
         localStorage.removeItem('pretute_promo');
 
-        const nameInput = document.getElementById("custFullName");
-        const phoneInput = document.getElementById("custPhone");
-        const emailInput = document.getElementById("custEmail");
-        const addrInput = document.getElementById("custAddress");
-        const cityInput = document.getElementById("custCity");
-        const pinInput = document.getElementById("custPincode");
-        if (nameInput) nameInput.value = "";
-        if (phoneInput) phoneInput.value = "";
-        if (emailInput) emailInput.value = "";
-        if (addrInput) addrInput.value = "";
-        if (cityInput) cityInput.value = "";
-        if (pinInput) pinInput.value = "";
+        const currentCust = typeof StoreData !== 'undefined' ? StoreData.getCurrentCustomer() : null;
+        if (!currentCust) {
+            const nameInput = document.getElementById("custFullName");
+            const phoneInput = document.getElementById("custPhone");
+            const emailInput = document.getElementById("custEmail");
+            const addrInput = document.getElementById("custAddress");
+            const cityInput = document.getElementById("custCity");
+            const pinInput = document.getElementById("custPincode");
+            if (nameInput) nameInput.value = "";
+            if (phoneInput) phoneInput.value = "";
+            if (emailInput) emailInput.value = "";
+            if (addrInput) addrInput.value = "";
+            if (cityInput) cityInput.value = "";
+            if (pinInput) pinInput.value = "";
+        }
 
         updateBadges();
         overlay.classList.remove("active");
@@ -1542,7 +1668,7 @@ function renderHeroBanners() {
         <div class="carousel-slide ${idx === 0 ? 'active' : ''}" style="background-image: linear-gradient(rgba(26,37,60,0.5), rgba(26,37,60,0.2)), url('${b.image || 'assets/hero1.jpg'}');">
             <div class="carousel-content">
                 ${b.subtitle ? `<span class="slide-subtitle">${b.subtitle}</span>` : ''}
-                <h2 class="slide-title">${b.headline}</h2>
+                <h2 class="slide-title">${b.headline || b.title || "Luxury Organic Wear"}</h2>
                 ${b.description ? `<p class="slide-desc">${b.description}</p>` : ''}
                 <div class="slide-actions">
                     ${b.btn1Text ? `<a href="${b.btn1Link || '#products'}" class="btn btn-primary btn-large">${b.btn1Text}</a>` : ''}
@@ -1802,6 +1928,67 @@ function setupHeaderUtilities() {
         });
     }
 
+    // Account Dropdown Click & Hover Management
+    const userWrapper = document.getElementById("userAccountWrapper");
+    const userBtn = document.getElementById("userMenuBtn");
+    const userDropdown = document.getElementById("userDropdown");
+    const adminLink = document.getElementById("adminPanelLink");
+
+    if (userWrapper && userBtn && userDropdown) {
+        // Explicit click toggle so user can click Account to open & lock dropdown
+        userBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const isOpen = userWrapper.classList.contains("active") || userDropdown.classList.contains("show");
+            if (isOpen) {
+                userWrapper.classList.remove("active");
+                userDropdown.classList.remove("show");
+                userBtn.setAttribute("aria-expanded", "false");
+            } else {
+                userWrapper.classList.add("active");
+                userDropdown.classList.add("show");
+                userBtn.setAttribute("aria-expanded", "true");
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!userWrapper.contains(e.target)) {
+                userWrapper.classList.remove("active");
+                userDropdown.classList.remove("show");
+                userBtn.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                userWrapper.classList.remove("active");
+                userDropdown.classList.remove("show");
+                userBtn.setAttribute("aria-expanded", "false");
+            }
+        });
+
+        // Admin Back Panel navigation click handler
+        if (adminLink) {
+            adminLink.addEventListener("click", (e) => {
+                userWrapper.classList.remove("active");
+                userDropdown.classList.remove("show");
+                // Direct navigation to admin panel
+                window.location.href = "admin.html";
+            });
+        }
+    }
+
+    // Initialize Customer Authentication, Profile, Orders, Delivery & Refund modals
+    setupCustomerAuthModal();
+    setupCustomerProfileModal();
+    setupCustomerOrdersModal();
+    setupCancelOrderModal();
+    setupDamageRefundModal();
+    setupRefundPolicyModal();
+    setupDeliveryEstimator();
+    syncCustomerSessionUI();
+
     // Detail page Tabs selector
     const tabContainer = document.querySelector(".product-specs-tabs");
     if (tabContainer) {
@@ -1830,6 +2017,870 @@ function setupHeaderUtilities() {
             input.value = val + 1;
         });
     }
+}
+
+// ==========================================================================
+// ESTIMATED DELIVERY DATE & PINCODE CALCULATOR
+// ==========================================================================
+function calculateDeliveryDates(pincode = "") {
+    const now = new Date();
+    // Standard: 3-5 days
+    const clean = (pincode || "").replace(/\D/g, "");
+    const stdDays = (clean.startsWith("11") || clean.startsWith("40") || clean.startsWith("56")) ? 3 : 4;
+    const stdDate = new Date(now.getTime() + stdDays * 24 * 60 * 60 * 1000);
+    const expDate = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+
+    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    return {
+        standardDate: stdDate,
+        expressDate: expDate,
+        formattedStandard: stdDate.toLocaleDateString("en-IN", options),
+        formattedExpress: expDate.toLocaleDateString("en-IN", options)
+    };
+}
+
+function getCalculatedDeliveryString(pincode = "") {
+    const dates = calculateDeliveryDates(pincode);
+    return dates.formattedStandard;
+}
+
+function setupDeliveryEstimator() {
+    const input = document.getElementById("pincodeCheckInput");
+    const btn = document.getElementById("pincodeCheckBtn");
+    const resultDate = document.getElementById("pincodeEstDate");
+    const countdownEl = document.getElementById("deliveryCountdownTimer");
+
+    // Initialize with saved or default pincode
+    const currentCust = (typeof StoreData !== 'undefined' && StoreData.getCurrentCustomer) ? StoreData.getCurrentCustomer() : null;
+    const savedPin = (currentCust && currentCust.address && currentCust.address.pincode)
+        || localStorage.getItem("pretute_user_pincode")
+        || "400705";
+
+    if (input && !input.value) input.value = savedPin;
+
+    function updateEstimator(pin) {
+        if (!resultDate) return;
+        const cleanPin = (pin || "").replace(/\D/g, "");
+        if (cleanPin.length === 6) {
+            localStorage.setItem("pretute_user_pincode", cleanPin);
+        }
+        const dates = calculateDeliveryDates(cleanPin);
+        resultDate.textContent = dates.formattedStandard;
+    }
+
+    if (btn && input) {
+        btn.addEventListener("click", () => {
+            const val = input.value.trim();
+            if (val.length !== 6 || isNaN(val)) {
+                showStoreToast("Please enter a valid 6-digit Pincode.");
+                return;
+            }
+            updateEstimator(val);
+            showStoreToast(`Delivery verified for Pincode ${val}!`);
+        });
+
+        input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                btn.click();
+            }
+        });
+    }
+
+    // Live countdown timer for same-day dispatch
+    if (countdownEl) {
+        function updateCountdown() {
+            const now = new Date();
+            const cutoff = new Date();
+            cutoff.setHours(18, 0, 0, 0); // 6:00 PM cutoff
+            let diff = cutoff - now;
+            if (diff <= 0) {
+                cutoff.setDate(cutoff.getDate() + 1);
+                diff = cutoff - now;
+            }
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            countdownEl.textContent = `${String(hours).padStart(2, '0')}h ${String(mins).padStart(2, '0')}m`;
+        }
+        updateCountdown();
+        setInterval(updateCountdown, 60000);
+    }
+
+    updateEstimator(savedPin);
+}
+
+// ==========================================================================
+// CUSTOMER AUTHENTICATION (SIGN IN, REGISTER & DEMO LOGIN)
+// ==========================================================================
+function setupCustomerAuthModal() {
+    const modal = document.getElementById("customerAuthModal");
+    const closeBtn = document.getElementById("closeCustomerAuthBtn");
+    const loginBtn = document.getElementById("loginBtn");
+    const mobLoginLink = document.getElementById("mobLoginLink");
+    const tabSignIn = document.getElementById("authTabSignIn");
+    const tabRegister = document.getElementById("authTabRegister");
+    const signInForm = document.getElementById("customerSignInForm");
+    const registerForm = document.getElementById("customerRegisterForm");
+    const demoBtn = document.getElementById("demoCustomerLoginBtn");
+    const signInError = document.getElementById("customerSignInErrorMsg");
+    const regError = document.getElementById("customerRegisterErrorMsg");
+
+    if (!modal) return;
+
+    window.openCustomerAuthModal = (tab = "signin") => {
+        modal.classList.add("active");
+        if (signInError) signInError.style.display = "none";
+        if (regError) regError.style.display = "none";
+        if (tab === "register") {
+            tabRegister?.click();
+        } else {
+            tabSignIn?.click();
+        }
+    };
+
+    window.closeCustomerAuthModal = () => {
+        modal.classList.remove("active");
+    };
+
+    closeBtn?.addEventListener("click", window.closeCustomerAuthModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeCustomerAuthModal();
+    });
+
+    loginBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        const currentCust = typeof StoreData !== 'undefined' ? StoreData.getCurrentCustomer() : null;
+        if (currentCust) {
+            window.openCustomerProfileModal?.();
+        } else {
+            window.openCustomerAuthModal("signin");
+        }
+    });
+
+    mobLoginLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        const currentCust = typeof StoreData !== 'undefined' ? StoreData.getCurrentCustomer() : null;
+        if (currentCust) {
+            window.openCustomerProfileModal?.();
+        } else {
+            window.openCustomerAuthModal("signin");
+        }
+    });
+
+    tabSignIn?.addEventListener("click", () => {
+        tabSignIn.classList.add("active");
+        tabRegister.classList.remove("active");
+        if (signInForm) signInForm.style.display = "block";
+        if (registerForm) registerForm.style.display = "none";
+    });
+
+    tabRegister?.addEventListener("click", () => {
+        tabRegister.classList.add("active");
+        tabSignIn.classList.remove("active");
+        if (signInForm) signInForm.style.display = "none";
+        if (registerForm) registerForm.style.display = "block";
+    });
+
+    // Quick Demo Customer Login
+    demoBtn?.addEventListener("click", () => {
+        if (typeof StoreData !== 'undefined' && StoreData.loginCustomer) {
+            const res = StoreData.loginCustomer("customer@pretute.com", "password123");
+            if (res.success) {
+                syncCustomerSessionUI();
+                window.closeCustomerAuthModal();
+                showStoreToast(`Welcome back, ${res.customer.name}!`);
+                return;
+            }
+        }
+        // Fallback demo
+        const demoCust = {
+            id: "cust-1",
+            name: "Mitalee Sharma",
+            email: "customer@pretute.com",
+            phone: "9876543210",
+            address: {
+                street: "Flat 402, Lotus Orchid, Palm Beach Road",
+                city: "Mumbai",
+                state: "Maharashtra",
+                pincode: "400705"
+            }
+        };
+        localStorage.setItem("pretute_customer", JSON.stringify(demoCust));
+        syncCustomerSessionUI();
+        window.closeCustomerAuthModal();
+        showStoreToast("Logged in as Demo Customer (Mitalee Sharma)!");
+    });
+
+    signInForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const identifier = document.getElementById("custLoginEmail").value.trim();
+        const password = document.getElementById("custLoginPassword").value;
+
+        if (typeof StoreData !== 'undefined' && StoreData.loginCustomer) {
+            const res = StoreData.loginCustomer(identifier, password);
+            if (!res.success) {
+                if (signInError) {
+                    signInError.textContent = res.message;
+                    signInError.style.display = "block";
+                }
+                return;
+            }
+            syncCustomerSessionUI();
+            window.closeCustomerAuthModal();
+            showStoreToast(`Welcome back, ${res.customer.name}!`);
+        } else {
+            const name = identifier.split("@")[0].replace(/[._]/g, " ");
+            const customer = { name: name.charAt(0).toUpperCase() + name.slice(1), email: identifier };
+            localStorage.setItem("pretute_customer", JSON.stringify(customer));
+            syncCustomerSessionUI();
+            window.closeCustomerAuthModal();
+            showStoreToast(`Welcome back, ${customer.name}!`);
+        }
+    });
+
+    registerForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("custRegName").value.trim();
+        const email = document.getElementById("custRegEmail").value.trim();
+        const phone = document.getElementById("custRegPhone").value.trim();
+        const password = document.getElementById("custRegPassword").value;
+
+        if (typeof StoreData !== 'undefined' && StoreData.registerCustomer) {
+            const res = StoreData.registerCustomer({ name, email, phone, password });
+            if (!res.success) {
+                if (regError) {
+                    regError.textContent = res.message;
+                    regError.style.display = "block";
+                }
+                return;
+            }
+            syncCustomerSessionUI();
+            window.closeCustomerAuthModal();
+            showStoreToast(`Account created successfully! Welcome, ${name}!`);
+        } else {
+            const customer = { name, email, phone };
+            localStorage.setItem("pretute_customer", JSON.stringify(customer));
+            syncCustomerSessionUI();
+            window.closeCustomerAuthModal();
+            showStoreToast(`Account created successfully! Welcome, ${customer.name}!`);
+        }
+    });
+}
+
+function syncCustomerSessionUI() {
+    const currentCust = (typeof StoreData !== 'undefined' && StoreData.getCurrentCustomer)
+        ? StoreData.getCurrentCustomer()
+        : (() => {
+            const r = localStorage.getItem("pretute_customer");
+            try { return r ? JSON.parse(r) : null; } catch (e) { return null; }
+        })();
+
+    const label = document.getElementById("userAccountLabel");
+    const sessionBox = document.getElementById("customerDropdownSession");
+    const loginBtn = document.getElementById("loginBtn");
+    const profileLink = document.getElementById("profileLink");
+    const mobProfileLink = document.getElementById("mobProfileLink");
+    const mobLoginLink = document.getElementById("mobLoginLink");
+
+    if (currentCust) {
+        const firstName = currentCust.name ? currentCust.name.split(" ")[0] : "User";
+        if (label) label.textContent = firstName;
+        if (mobLoginLink) mobLoginLink.innerHTML = `<i class="fa-solid fa-user-check"></i> Hi, ${firstName}`;
+
+        if (profileLink) profileLink.style.display = "flex";
+        if (mobProfileLink) mobProfileLink.style.display = "block";
+
+        if (sessionBox) {
+            sessionBox.innerHTML = `
+                <div class="dropdown-customer-info">
+                    <div class="dropdown-customer-name">👋 ${currentCust.name}</div>
+                    <div class="dropdown-customer-email">${currentCust.email || currentCust.phone}</div>
+                </div>
+            `;
+        }
+
+        if (loginBtn) {
+            loginBtn.textContent = "Sign Out";
+            loginBtn.className = "dropdown-link btn-signout";
+            loginBtn.onclick = (e) => {
+                e.preventDefault();
+                if (typeof StoreData !== 'undefined' && StoreData.logoutCustomer) {
+                    StoreData.logoutCustomer();
+                } else {
+                    localStorage.removeItem("pretute_customer");
+                }
+                syncCustomerSessionUI();
+                showStoreToast("Signed out successfully.");
+            };
+        }
+    } else {
+        if (label) label.textContent = "Account";
+        if (sessionBox) sessionBox.innerHTML = "";
+        if (profileLink) profileLink.style.display = "none";
+        if (mobProfileLink) mobProfileLink.style.display = "none";
+        if (mobLoginLink) mobLoginLink.innerHTML = `<i class="fa-regular fa-user"></i> Sign In / Account`;
+
+        if (loginBtn) {
+            loginBtn.textContent = "Sign In / Register";
+            loginBtn.className = "dropdown-link btn-login";
+            loginBtn.onclick = (e) => {
+                e.preventDefault();
+                window.openCustomerAuthModal?.("signin");
+            };
+        }
+    }
+}
+
+// ==========================================================================
+// CUSTOMER PROFILE & ACCOUNT DETAILS MODAL
+// ==========================================================================
+function setupCustomerProfileModal() {
+    const modal = document.getElementById("customerProfileModal");
+    const closeBtn = document.getElementById("closeCustomerProfileBtn");
+    const profileLink = document.getElementById("profileLink");
+    const mobProfileLink = document.getElementById("mobProfileLink");
+    const personalForm = document.getElementById("profilePersonalForm");
+    const addressForm = document.getElementById("profileAddressForm");
+    const openOrdersBtn = document.getElementById("profileOpenOrdersBtn");
+    const signOutBtn = document.getElementById("profileSignOutBtn");
+
+    if (!modal) return;
+
+    window.openCustomerProfileModal = () => {
+        const cust = (typeof StoreData !== 'undefined' && StoreData.getCurrentCustomer)
+            ? StoreData.getCurrentCustomer()
+            : null;
+
+        if (!cust) {
+            window.openCustomerAuthModal?.("signin");
+            return;
+        }
+
+        // Populate header
+        const initials = cust.name ? cust.name.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2) : "PR";
+        const avatarEl = document.getElementById("profileAvatarCircle");
+        if (avatarEl) avatarEl.textContent = initials;
+        document.getElementById("profileNameDisplay").textContent = cust.name || "Valued Customer";
+        document.getElementById("profileEmailDisplay").textContent = cust.email || cust.phone || "Verified Customer";
+
+        // Populate Personal Form
+        document.getElementById("profileFullName").value = cust.name || "";
+        document.getElementById("profileEmail").value = cust.email || "";
+        document.getElementById("profilePhone").value = cust.phone || "";
+
+        // Populate Address Form
+        const addr = cust.address || {};
+        document.getElementById("profileStreet").value = addr.street || "";
+        document.getElementById("profileCity").value = addr.city || "";
+        document.getElementById("profilePincode").value = addr.pincode || "";
+        document.getElementById("profileState").value = addr.state || "";
+
+        // Populate Stats
+        const orders = (typeof StoreData !== 'undefined' && StoreData.getOrders) ? StoreData.getOrders() : [];
+        const userOrders = orders.filter(o =>
+            (cust.email && o.customerEmail && o.customerEmail.toLowerCase() === cust.email.toLowerCase()) ||
+            (cust.phone && o.customerPhone && o.customerPhone === cust.phone)
+        );
+        document.getElementById("statOrdersCount").textContent = userOrders.length || orders.length;
+        document.getElementById("statWishlistCount").textContent = STATE.wishlist ? STATE.wishlist.length : 0;
+
+        modal.classList.add("active");
+    };
+
+    window.closeCustomerProfileModal = () => {
+        modal.classList.remove("active");
+    };
+
+    closeBtn?.addEventListener("click", window.closeCustomerProfileModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeCustomerProfileModal();
+    });
+
+    profileLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.openCustomerProfileModal();
+    });
+
+    mobProfileLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.openCustomerProfileModal();
+    });
+
+    // Profile Tabs switching
+    modal.querySelectorAll(".profile-tab-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            modal.querySelectorAll(".profile-tab-btn").forEach(b => b.classList.remove("active"));
+            modal.querySelectorAll(".profile-tab-pane").forEach(p => p.style.display = "none");
+            btn.classList.add("active");
+            const target = document.getElementById(btn.getAttribute("data-ptab"));
+            if (target) target.style.display = "block";
+        });
+    });
+
+    personalForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("profileFullName").value.trim();
+        const email = document.getElementById("profileEmail").value.trim();
+        const phone = document.getElementById("profilePhone").value.trim();
+
+        if (typeof StoreData !== 'undefined' && StoreData.updateCustomer) {
+            StoreData.updateCustomer({ name, email, phone });
+            syncCustomerSessionUI();
+            showStoreToast("Personal details saved successfully!");
+        }
+    });
+
+    addressForm?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const street = document.getElementById("profileStreet").value.trim();
+        const city = document.getElementById("profileCity").value.trim();
+        const pincode = document.getElementById("profilePincode").value.trim();
+        const state = document.getElementById("profileState").value.trim();
+
+        if (typeof StoreData !== 'undefined' && StoreData.updateCustomer) {
+            StoreData.updateCustomer({
+                address: { street, city, pincode, state }
+            });
+            if (pincode) localStorage.setItem("pretute_user_pincode", pincode);
+            showStoreToast("Shipping address updated successfully!");
+        }
+    });
+
+    openOrdersBtn?.addEventListener("click", () => {
+        window.closeCustomerProfileModal();
+        window.openCustomerOrdersModal();
+    });
+
+    signOutBtn?.addEventListener("click", () => {
+        if (typeof StoreData !== 'undefined' && StoreData.logoutCustomer) {
+            StoreData.logoutCustomer();
+        } else {
+            localStorage.removeItem("pretute_customer");
+        }
+        syncCustomerSessionUI();
+        window.closeCustomerProfileModal();
+        showStoreToast("Signed out successfully.");
+    });
+}
+
+// ==========================================================================
+// ORDER CANCELLATION MODAL
+// ==========================================================================
+function setupCancelOrderModal() {
+    const modal = document.getElementById("cancelOrderModal");
+    const closeBtn = document.getElementById("closeCancelOrderBtn");
+    const abortBtn = document.getElementById("abortCancelOrderBtn");
+    const form = document.getElementById("confirmCancelOrderForm");
+
+    if (!modal) return;
+
+    window.openCancelOrderModal = (orderId) => {
+        document.getElementById("cancelTargetOrderId").textContent = orderId;
+        document.getElementById("cancelOrderIdHidden").value = orderId;
+        document.getElementById("cancelReasonSelect").value = "";
+        document.getElementById("cancelReasonNotes").value = "";
+        modal.classList.add("active");
+    };
+
+    window.closeCancelOrderModal = () => {
+        modal.classList.remove("active");
+    };
+
+    closeBtn?.addEventListener("click", window.closeCancelOrderModal);
+    abortBtn?.addEventListener("click", window.closeCancelOrderModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeCancelOrderModal();
+    });
+
+    form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const orderId = document.getElementById("cancelOrderIdHidden").value;
+        const reason = document.getElementById("cancelReasonSelect").value;
+        const notes = document.getElementById("cancelReasonNotes").value.trim();
+        const fullReason = notes ? `${reason} (${notes})` : reason;
+
+        if (typeof StoreData !== 'undefined' && StoreData.cancelOrder) {
+            const res = StoreData.cancelOrder(orderId, fullReason);
+            if (res.success) {
+                window.closeCancelOrderModal();
+                if (window.renderCustomerOrders) window.renderCustomerOrders();
+                showStoreToast(`Order #${orderId} cancelled successfully.`);
+            } else {
+                showStoreToast(res.message || "Failed to cancel order.");
+            }
+        }
+    });
+}
+
+// ==========================================================================
+// RETURN / REFUND & DAMAGE VIDEO CLAIM MODAL
+// ==========================================================================
+function setupDamageRefundModal() {
+    const modal = document.getElementById("damageRefundModal");
+    const closeBtn = document.getElementById("closeDamageRefundBtn");
+    const form = document.getElementById("damageRefundForm");
+    const videoInput = document.getElementById("refundVideoFileInput");
+    const dropzone = document.getElementById("videoDropzone");
+    const dropzonePrompt = document.getElementById("videoDropzonePrompt");
+    const previewContainer = document.getElementById("videoPreviewContainer");
+    const videoPreview = document.getElementById("refundVideoPreview");
+    const fileNameDisplay = document.getElementById("videoFileNameDisplay");
+    const removeVideoBtn = document.getElementById("removeVideoBtn");
+    const photoInput = document.getElementById("refundPhotoFileInput");
+    const photoThumbnails = document.getElementById("refundPhotoThumbnails");
+    const payoutModeSelect = document.getElementById("refundPayoutMode");
+    const upiGroup = document.getElementById("refundUpiGroup");
+
+    if (!modal) return;
+
+    let attachedVideoName = "";
+
+    window.openDamageRefundModal = (orderId) => {
+        document.getElementById("refundTargetOrderId").textContent = orderId;
+        document.getElementById("refundOrderIdHidden").value = orderId;
+        document.getElementById("refundReasonSelect").value = "";
+        document.getElementById("refundDesc").value = "";
+        document.getElementById("refundVideoLink").value = "";
+        document.getElementById("refundConfirmCheck").checked = false;
+
+        // Reset video preview
+        attachedVideoName = "";
+        if (videoInput) videoInput.value = "";
+        if (videoPreview) { videoPreview.src = ""; videoPreview.pause(); }
+        if (previewContainer) previewContainer.style.display = "none";
+        if (dropzonePrompt) dropzonePrompt.style.display = "block";
+        if (photoThumbnails) { photoThumbnails.innerHTML = ""; photoThumbnails.style.display = "none"; }
+
+        modal.classList.add("active");
+    };
+
+    window.closeDamageRefundModal = () => {
+        modal.classList.remove("active");
+        if (videoPreview) videoPreview.pause();
+    };
+
+    closeBtn?.addEventListener("click", window.closeDamageRefundModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeDamageRefundModal();
+    });
+
+    // Video dropzone click triggers file input
+    dropzone?.addEventListener("click", (e) => {
+        if (e.target !== removeVideoBtn && !removeVideoBtn?.contains(e.target)) {
+            videoInput?.click();
+        }
+    });
+
+    videoInput?.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (file) {
+            attachedVideoName = file.name;
+            const url = URL.createObjectURL(file);
+            videoPreview.src = url;
+            fileNameDisplay.textContent = `📹 ${file.name} (${(file.size / (1024 * 1024)).toFixed(1)} MB)`;
+            dropzonePrompt.style.display = "none";
+            previewContainer.style.display = "block";
+        }
+    });
+
+    removeVideoBtn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        attachedVideoName = "";
+        videoInput.value = "";
+        videoPreview.src = "";
+        previewContainer.style.display = "none";
+        dropzonePrompt.style.display = "block";
+    });
+
+    // Photo thumbnails preview
+    photoInput?.addEventListener("change", (e) => {
+        if (!photoThumbnails) return;
+        photoThumbnails.innerHTML = "";
+        if (e.target.files && e.target.files.length > 0) {
+            photoThumbnails.style.display = "flex";
+            Array.from(e.target.files).forEach(file => {
+                const img = document.createElement("img");
+                img.src = URL.createObjectURL(file);
+                img.className = "photo-thumb";
+                photoThumbnails.appendChild(img);
+            });
+        } else {
+            photoThumbnails.style.display = "none";
+        }
+    });
+
+    payoutModeSelect?.addEventListener("change", () => {
+        if (upiGroup) {
+            upiGroup.style.display = payoutModeSelect.value === "UPI Direct Transfer" ? "block" : "none";
+        }
+    });
+
+    form?.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const orderId = document.getElementById("refundOrderIdHidden").value;
+        const reason = document.getElementById("refundReasonSelect").value;
+        const description = document.getElementById("refundDesc").value.trim();
+        const videoLink = document.getElementById("refundVideoLink").value.trim();
+        const payoutMethod = payoutModeSelect ? payoutModeSelect.value : "Original Payment Method";
+        const upiId = document.getElementById("refundUpiId") ? document.getElementById("refundUpiId").value.trim() : "";
+
+        // Mandatory Unboxing Video verification
+        if (!attachedVideoName && !videoLink) {
+            showStoreToast("Mandatory unboxing video required! Please upload video file or provide video link.");
+            return;
+        }
+
+        if (typeof StoreData !== 'undefined' && StoreData.requestRefund) {
+            const res = StoreData.requestRefund(orderId, {
+                reason,
+                description,
+                videoProofName: attachedVideoName || "cloud_video_link",
+                videoProofUrl: videoLink,
+                refundMethod: payoutMethod,
+                upiId: upiId
+            });
+
+            if (res.success) {
+                window.closeDamageRefundModal();
+                if (window.renderCustomerOrders) window.renderCustomerOrders();
+                showStoreToast(`Refund Claim #${res.ticketId} submitted for Order #${orderId}!`);
+            }
+        }
+    });
+}
+
+// ==========================================================================
+// REFUND & DAMAGE VIDEO POLICY MODAL
+// ==========================================================================
+function setupRefundPolicyModal() {
+    const modal = document.getElementById("refundPolicyModal");
+    const closeBtn = document.getElementById("closeRefundPolicyBtn");
+    const ackBtn = document.getElementById("policyAcknowledgeBtn");
+    const policyLink = document.getElementById("refundPolicyLink");
+    const mobPolicyLink = document.getElementById("mobRefundPolicyLink");
+    const footerPolicyLink = document.getElementById("footerRefundPolicyLink");
+    const perkPolicyTrigger = document.getElementById("detailRefundPolicyPerk");
+
+    if (!modal) return;
+
+    window.openRefundPolicyModal = () => {
+        modal.classList.add("active");
+    };
+
+    window.closeRefundPolicyModal = () => {
+        modal.classList.remove("active");
+    };
+
+    closeBtn?.addEventListener("click", window.closeRefundPolicyModal);
+    ackBtn?.addEventListener("click", window.closeRefundPolicyModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeRefundPolicyModal();
+    });
+
+    [policyLink, mobPolicyLink, footerPolicyLink, perkPolicyTrigger].forEach(btn => {
+        btn?.addEventListener("click", (e) => {
+            e.preventDefault();
+            window.openRefundPolicyModal();
+        });
+    });
+}
+
+// ==========================================================================
+// CUSTOMER ORDERS MODAL LOGIC WITH TIMELINE & ACTIONS
+// ==========================================================================
+function setupCustomerOrdersModal() {
+    const modal = document.getElementById("customerOrdersModal");
+    const closeBtn = document.getElementById("closeCustomerOrdersBtn");
+    const ordersLink = document.getElementById("ordersLink");
+    const mobOrdersLink = document.getElementById("mobOrdersLink");
+    const container = document.getElementById("customerOrdersContainer");
+
+    if (!modal) return;
+
+    window.renderCustomerOrders = () => {
+        if (!container) return;
+        const allOrders = (typeof StoreData !== "undefined" && StoreData.getOrders) ? StoreData.getOrders() : [];
+        const currentCust = (typeof StoreData !== 'undefined' && StoreData.getCurrentCustomer) ? StoreData.getCurrentCustomer() : null;
+
+        let displayOrders = allOrders;
+        if (currentCust) {
+            const matching = allOrders.filter(o =>
+                (currentCust.email && o.customerEmail && o.customerEmail.toLowerCase() === currentCust.email.toLowerCase()) ||
+                (currentCust.phone && o.customerPhone && o.customerPhone === currentCust.phone)
+            );
+            if (matching.length > 0) displayOrders = matching;
+        }
+
+        if (!displayOrders || displayOrders.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; padding: 32px 16px;">
+                    <i class="fa-solid fa-box-open" style="font-size: 3rem; color: var(--color-border); margin-bottom: 12px; display: block;"></i>
+                    <h4 style="color: var(--color-navy); margin-bottom: 6px;">No Orders Found</h4>
+                    <p style="color: var(--color-navy-light); font-size: 0.88rem; margin-bottom: 16px;">You haven't placed any orders yet.</p>
+                    <a href="#home" class="btn btn-primary" onclick="window.closeCustomerOrdersModal()">Start Shopping</a>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = displayOrders.map(order => {
+            const dateStr = new Date(order.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+            const items = order.items || [];
+            const itemsSummary = items.map(it => `${it.title} (x${it.quantity})`).join(", ");
+            const isCancelled = order.status === "Cancelled";
+            const isDelivered = order.status === "Delivered";
+            const isRefundRequested = order.status === "Refund Requested";
+
+            let badgeColor = "#f59e0b"; // Pending/Confirmed
+            if (isDelivered) badgeColor = "#10b981";
+            else if (order.status === "Shipped") badgeColor = "#3b82f6";
+            else if (isCancelled) badgeColor = "#ef4444";
+            else if (isRefundRequested) badgeColor = "#8b5cf6";
+
+            // Delivery tracker step calculation
+            let step1 = "completed", step2 = "", step3 = "", step4 = "";
+            if (order.status === "Confirmed") { step2 = "active"; }
+            else if (order.status === "Shipped") { step2 = "completed"; step3 = "active"; }
+            else if (isDelivered) { step2 = "completed"; step3 = "completed"; step4 = "completed"; }
+
+            const estDeliveryText = order.estimatedDelivery || getCalculatedDeliveryString();
+
+            return `
+                <div class="customer-order-card">
+                    <div class="customer-order-card-header">
+                        <div>
+                            <strong>Order #${order.id}</strong>
+                            <div style="font-size: 0.75rem; color: var(--color-navy-light); margin-top: 2px;">Placed on ${dateStr} • ${order.paymentMethod || 'COD'}</div>
+                        </div>
+                        <span style="background: ${badgeColor}18; color: ${badgeColor}; border: 1px solid ${badgeColor}40; padding: 4px 10px; border-radius: var(--radius-full); font-weight: 700; font-size: 0.78rem;">
+                            ${order.status}
+                        </span>
+                    </div>
+
+                    ${!isCancelled ? `
+                        <div class="order-est-delivery-bar">
+                            <span><i class="fa-solid fa-truck-fast" style="color: var(--color-primary);"></i> Estimated Delivery:</span>
+                            <strong style="color: #15803d;">${estDeliveryText}</strong>
+                        </div>
+                        <div class="order-tracking-stepper">
+                            <div class="order-step ${step1}">
+                                <div class="order-step-circle"><i class="fa-solid fa-check"></i></div>
+                                <span class="order-step-label">Placed</span>
+                            </div>
+                            <div class="order-step ${step2}">
+                                <div class="order-step-circle">${step2 === "completed" ? '<i class="fa-solid fa-check"></i>' : '2'}</div>
+                                <span class="order-step-label">Confirmed</span>
+                            </div>
+                            <div class="order-step ${step3}">
+                                <div class="order-step-circle">${step3 === "completed" ? '<i class="fa-solid fa-check"></i>' : '3'}</div>
+                                <span class="order-step-label">Shipped</span>
+                            </div>
+                            <div class="order-step ${step4}">
+                                <div class="order-step-circle">${step4 === "completed" ? '<i class="fa-solid fa-check"></i>' : '4'}</div>
+                                <span class="order-step-label">Delivered</span>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="background: #fef2f2; border: 1px solid #fecdd3; color: #b91c1c; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.8rem; margin: 8px 0;">
+                            <i class="fa-solid fa-circle-xmark"></i> <strong>Cancelled:</strong> ${order.cancelReason || 'Order cancelled'}
+                        </div>
+                    `}
+
+                    <div class="customer-order-card-items" style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
+                        <i class="fa-solid fa-bag-shopping" style="color: var(--color-navy-light);"></i>
+                        <span style="font-size: 0.85rem;">${itemsSummary}</span>
+                    </div>
+
+                    ${isRefundRequested && order.refundDetails ? `
+                        <div style="background: #f5f3ff; border: 1px solid #ddd6fe; color: #6d28d9; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 0.8rem; margin: 8px 0;">
+                            <i class="fa-solid fa-video"></i> <strong>Refund Claim #${order.refundDetails.ticketId}:</strong> Under Review • Video Proof Attached (${order.refundDetails.videoProofName})
+                        </div>
+                    ` : ''}
+
+                    <div class="customer-order-card-footer">
+                        <span>Total Paid: <strong style="color: var(--color-primary); font-size: 1rem;">₹${parseFloat(order.total || 0).toFixed(2)}</strong></span>
+                        <a href="#refund-policy" onclick="window.openRefundPolicyModal?.()" style="color: var(--color-navy-light); font-size: 0.78rem; text-decoration: underline;">
+                            Refund Policy
+                        </a>
+                    </div>
+
+                    <div class="order-card-actions">
+                        ${(!isCancelled && !isDelivered && !isRefundRequested) ? `
+                            <button class="btn-order-action btn-cancel-order" onclick="window.openCancelOrderModal('${order.id}')">
+                                <i class="fa-solid fa-xmark"></i> Cancel Order
+                            </button>
+                        ` : ''}
+
+                        ${(!isCancelled && !isRefundRequested) ? `
+                            <button class="btn-order-action btn-refund-order" onclick="window.openDamageRefundModal('${order.id}')">
+                                <i class="fa-solid fa-video"></i> Report Damage / Return Video Claim
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }).join("");
+    };
+
+    window.openCustomerOrdersModal = () => {
+        window.renderCustomerOrders();
+        modal.classList.add("active");
+    };
+
+    window.closeCustomerOrdersModal = () => {
+        modal.classList.remove("active");
+    };
+
+    closeBtn?.addEventListener("click", window.closeCustomerOrdersModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) window.closeCustomerOrdersModal();
+    });
+
+    ordersLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.openCustomerOrdersModal();
+    });
+
+    mobOrdersLink?.addEventListener("click", (e) => {
+        e.preventDefault();
+        window.openCustomerOrdersModal();
+    });
+}
+
+// Toast helper for storefront
+function showStoreToast(message) {
+    let toast = document.getElementById("storeToastNotification");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "storeToastNotification";
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #0f172a;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 9999;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(20px);
+            opacity: 0;
+            transition: all 0.25s ease;
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> <span>${message}</span>`;
+    toast.style.transform = "translateY(0)";
+    toast.style.opacity = "1";
+    setTimeout(() => {
+        toast.style.transform = "translateY(20px)";
+        toast.style.opacity = "0";
+    }, 3000);
 }
 
 // Quick Side Cart Drawers actions
@@ -2063,9 +3114,12 @@ function openQuickViewModal(productId) {
                     <span class="original-price" style="font-size:1.1rem;">₹${prod.originalPrice.toFixed(2)}</span>
                 </div>
                 <p class="product-short-desc" style="margin-bottom:20px;">${prod.shortDesc}</p>
-                <div class="purchase-actions" style="margin-bottom:0;">
+                <div class="purchase-actions" style="margin-bottom:0; display:flex; gap:8px; flex-wrap:wrap;">
                     <button class="btn btn-primary modal-add-to-cart-btn ${isPurchaseDisabled ? 'disabled' : ''}" ${isPurchaseDisabled ? 'disabled' : ''}>
                         <i class="fa-solid ${isPurchaseDisabled ? 'fa-ban' : 'fa-bag-shopping'}"></i> ${isPurchaseDisabled ? (isUnavailable ? 'Unavailable' : 'Out of Stock') : 'Add to Bag'}
+                    </button>
+                    <button class="btn modal-buy-now-btn ${isPurchaseDisabled ? 'disabled' : ''}" ${isPurchaseDisabled ? 'disabled' : ''}>
+                        <i class="fa-solid fa-bolt"></i> Buy Now
                     </button>
                     <a href="#product/${prod.id}" class="btn btn-outline modal-view-details-btn">Full Details</a>
                 </div>
@@ -2073,12 +3127,18 @@ function openQuickViewModal(productId) {
         </div>
     `;
 
-    // Bind add to cart
+    // Bind add to cart & buy now
     if (!isPurchaseDisabled) {
         content.querySelector(".modal-add-to-cart-btn").addEventListener("click", () => {
             addToCart(prod.id, 1, prod.sizes[0] || "Standard");
             closeQuickViewModal();
             openCartDrawer();
+        });
+
+        content.querySelector(".modal-buy-now-btn")?.addEventListener("click", () => {
+            addToCart(prod.id, 1, prod.sizes[0] || "Standard");
+            closeQuickViewModal();
+            window.location.hash = "#cart";
         });
     }
 

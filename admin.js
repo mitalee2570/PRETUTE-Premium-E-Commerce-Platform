@@ -608,8 +608,12 @@
                             <option value="Confirmed" ${order.status === "Confirmed" ? "selected" : ""}>Confirmed</option>
                             <option value="Shipped" ${order.status === "Shipped" ? "selected" : ""}>Shipped</option>
                             <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                            <option value="Refund Requested" ${order.status === "Refund Requested" ? "selected" : ""}>Refund Requested</option>
+                            <option value="Refund Approved" ${order.status === "Refund Approved" ? "selected" : ""}>Refund Approved</option>
                             <option value="Cancelled" ${order.status === "Cancelled" ? "selected" : ""}>Cancelled</option>
                         </select>
+                        ${order.cancelReason ? `<div style="font-size: 0.72rem; color: #ef4444; margin-top: 4px;" title="${order.cancelReason}">❌ ${order.cancelReason.substring(0, 22)}${order.cancelReason.length > 22 ? '...' : ''}</div>` : ''}
+                        ${order.refundDetails ? `<div style="font-size: 0.72rem; color: #7c3aed; margin-top: 4px; font-weight: 600;" title="Proof: ${order.refundDetails.videoProofName}"><i class="fa-solid fa-video"></i> Video Claim: ${order.refundDetails.ticketId}</div>` : ''}
                     </td>
                     <td>
                         <div class="table-actions">
@@ -744,14 +748,14 @@
     // ==========================================================================
     function setupEventListeners() {
         // Auth submit & logout
-        elements.adminLoginForm.addEventListener("submit", handleLogin);
-        elements.adminLogoutBtn.addEventListener("click", handleLogout);
+        elements.adminLoginForm?.addEventListener("submit", handleLogin);
+        elements.adminLogoutBtn?.addEventListener("click", handleLogout);
 
         // Mobile sidebar toggles
-        elements.sidebarToggleBtn.addEventListener("click", () => {
-            elements.sidebar.classList.toggle("open");
+        elements.sidebarToggleBtn?.addEventListener("click", () => {
+            elements.sidebar?.classList.toggle("open");
         });
-        elements.sidebarCloseBtn.addEventListener("click", closeMobileSidebar);
+        elements.sidebarCloseBtn?.addEventListener("click", closeMobileSidebar);
 
         // Dashboard quick action buttons
         document.getElementById("dashAddProductBtn")?.addEventListener("click", () => openAddProductModal());
@@ -1343,7 +1347,18 @@
         document.getElementById("invoiceShippingAddress").textContent = order.address || "Standard Storefront Delivery";
         document.getElementById("invoicePaymentMode").textContent = order.paymentMethod || "Cash on Delivery";
         document.getElementById("invoiceCouponUsed").textContent = order.couponUsed ? `Promo Code Applied: ${order.couponUsed}` : "No Coupon Applied";
-        document.getElementById("invoiceOrderNotes").textContent = order.notes ? `Customer Note: "${order.notes}"` : "";
+
+        let notesText = order.notes ? `Customer Note: "${order.notes}"` : "";
+        if (order.estimatedDelivery) {
+            notesText += (notesText ? " | " : "") + `Est. Delivery: ${order.estimatedDelivery}`;
+        }
+        if (order.cancelReason) {
+            notesText += (notesText ? " | " : "") + `Cancellation Reason: ${order.cancelReason}`;
+        }
+        if (order.refundDetails) {
+            notesText += (notesText ? " | " : "") + `Refund Claim #${order.refundDetails.ticketId}: ${order.refundDetails.reason} (Proof: ${order.refundDetails.videoProofName}${order.refundDetails.upiId ? ', UPI: ' + order.refundDetails.upiId : ''})`;
+        }
+        document.getElementById("invoiceOrderNotes").textContent = notesText;
 
         // Item rows
         const itemsTbody = document.getElementById("invoiceItemsTableBody");

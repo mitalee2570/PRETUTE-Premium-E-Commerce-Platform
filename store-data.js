@@ -13,14 +13,35 @@
         COUPONS: "pretute_db_coupons",
         MESSAGES: "pretute_db_messages",
         SETTINGS: "pretute_db_settings",
-        AUTH: "pretute_admin_auth"
+        AUTH: "pretute_admin_auth",
+        CUSTOMERS: "pretute_db_customers",
+        CUSTOMER_SESSION: "pretute_customer_session"
     };
+
+    // Default Seed Customer for Testing
+    const DEFAULT_CUSTOMERS = [
+        {
+            id: "cust-1",
+            name: "Mitalee Sharma",
+            email: "customer@pretute.com",
+            phone: "9876543210",
+            password: "password123",
+            createdAt: "2026-01-15T10:00:00.000Z",
+            address: {
+                street: "Flat 402, Lotus Orchid, Palm Beach Road",
+                city: "Mumbai",
+                state: "Maharashtra",
+                pincode: "400705"
+            }
+        }
+    ];
 
     // Default Seed Banners (Homepage Carousel Sliders)
     const DEFAULT_BANNERS = [
         {
             id: 1,
             title: "Luxury Organic Wear for Little Ones",
+            headline: "Luxury Organic Wear for Little Ones",
             subtitle: "Spring/Summer Collection",
             description: "Aesthetic pastel rompers and kids apparel hand-knit with 100% GOTS-certified organic cotton.",
             image: "assets/hero_fashion.png",
@@ -34,6 +55,7 @@
         {
             id: 2,
             title: "Handcrafted Montessori Toys",
+            headline: "Handcrafted Montessori Toys",
             subtitle: "Play & Grow",
             description: "Promote creative exploration, sensory growth, and active learning with premium toxin-free wood playsets.",
             image: "assets/hero_toys.png",
@@ -47,6 +69,7 @@
         {
             id: 3,
             title: "Artisan Crafts & Home Decor",
+            headline: "Artisan Crafts & Home Decor",
             subtitle: "Handmade Aesthetics",
             description: "Curated collection of handcrafted resin clocks, soy candles, and bohemian lifestyle accents.",
             image: "assets/Resin Art.jpg",
@@ -575,6 +598,8 @@
             const raw = readData(STORAGE_KEYS.BANNERS, DEFAULT_BANNERS);
             return raw.map(b => ({
                 ...b,
+                headline: b.headline || b.title || "Luxury Collection",
+                title: b.title || b.headline || "Luxury Collection",
                 active: b.active !== false,
                 status: b.active !== false ? "active" : "deactivated",
                 order: parseInt(b.order) || 1
@@ -586,8 +611,11 @@
         },
         saveBanner(banner) {
             const banners = this.getBanners();
+            const bannerTitle = banner.headline || banner.title || "Special Collection";
             const normalizedBanner = {
                 ...banner,
+                headline: bannerTitle,
+                title: bannerTitle,
                 order: parseInt(banner.order) || 1,
                 active: banner.active !== false && banner.status !== "deactivated",
                 status: banner.status || (banner.active !== false ? "active" : "deactivated")
@@ -650,6 +678,55 @@
                 return order;
             }
             return null;
+        },
+        cancelOrder(orderId, cancelReason) {
+            const orders = this.getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return { success: false, message: "Order not found" };
+            if (order.status === "Cancelled") return { success: false, message: "Order is already cancelled" };
+            if (order.status === "Delivered") return { success: false, message: "Delivered orders cannot be cancelled directly. Please request a return/refund." };
+
+            order.status = "Cancelled";
+            order.cancelledAt = new Date().toISOString();
+            order.cancelReason = cancelReason || "Cancelled by customer";
+
+            // Restock product quantities
+            if (Array.isArray(order.items)) {
+                order.items.forEach(item => {
+                    const prod = this.getProductById(item.productId);
+                    if (prod && typeof prod.stock !== 'undefined') {
+                        const newStock = (parseInt(prod.stock) || 0) + (parseInt(item.quantity) || 1);
+                        this.saveProduct({ ...prod, stock: newStock, stockStatus: newStock > 0 ? "in_stock" : "out_of_stock" });
+                    }
+                });
+            }
+
+            writeData(STORAGE_KEYS.ORDERS, orders);
+            return { success: true, order };
+        },
+        requestRefund(orderId, refundData) {
+            const orders = this.getOrders();
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return { success: false, message: "Order not found" };
+
+            const ticketId = "REF-" + Math.floor(10000 + Math.random() * 90000);
+            order.status = "Refund Requested";
+            order.refundDetails = {
+                ticketId: ticketId,
+                reason: refundData.reason || "Received Damaged Item",
+                description: refundData.description || "",
+                items: refundData.items || (order.items || []).map(it => it.title),
+                videoProofName: refundData.videoProofName || "unboxing_damage_video.mp4",
+                videoProofUrl: refundData.videoProofUrl || "",
+                photoUrls: refundData.photoUrls || [],
+                refundMethod: refundData.refundMethod || "Original Payment Source",
+                upiId: refundData.upiId || "",
+                requestedAt: new Date().toISOString(),
+                status: "Under Review"
+            };
+
+            writeData(STORAGE_KEYS.ORDERS, orders);
+            return { success: true, order, ticketId };
         },
         deleteOrder(orderId) {
             const orders = this.getOrders().filter(o => o.id !== orderId);
@@ -788,6 +865,126 @@
             return true;
         },
 
+        // --- CUSTOMER ACCOUNTS ---
+        getCustomers() {
+            return readData(STORAGE_KEYS.CUSTOMERS, DEFAULT_CUSTOMERS);
+        },
+        getCustomerById(id) {
+            return this.getCustomers().find(c => c.id === id) || null;
+        },
+        registerCustomer(custData) {
+            const customers = this.getCustomers();
+            const normalizedEmail = (custData.email || "").trim().toLowerCase();
+            const normalizedPhone = (custData.phone || "").trim();
+
+            if (normalizedEmail && customers.some(c => c.email.toLowerCase() === normalizedEmail)) {
+                return { success: false, message: "An account with this email already exists." };
+            }
+            if (normalizedPhone && customers.some(c => c.phone === normalizedPhone)) {
+                return { success: false, message: "An account with this mobile number already exists." };
+            }
+
+            const newCust = {
+                id: "cust-" + Date.now(),
+                name: custData.name ? custData.name.trim() : "Customer",
+                email: normalizedEmail,
+                phone: normalizedPhone,
+                password: custData.password || "password123",
+                createdAt: new Date().toISOString(),
+                address: custData.address || {
+                    street: custData.street || "",
+                    city: custData.city || "",
+                    state: custData.state || "",
+                    pincode: custData.pincode || ""
+                }
+            };
+
+            customers.push(newCust);
+            writeData(STORAGE_KEYS.CUSTOMERS, customers);
+            this.setCurrentCustomer(newCust);
+            return { success: true, customer: newCust };
+        },
+        loginCustomer(identifier, password) {
+            const customers = this.getCustomers();
+            const cleanId = (identifier || "").trim().toLowerCase();
+            const cust = customers.find(c =>
+                c.email.toLowerCase() === cleanId ||
+                c.phone === cleanId ||
+                (c.phone && c.phone.replace(/\D/g, '') === cleanId.replace(/\D/g, ''))
+            );
+
+            if (!cust) {
+                return { success: false, message: "Account not found with this email or mobile number." };
+            }
+
+            if (cust.password && cust.password !== password) {
+                return { success: false, message: "Incorrect password. Please try again." };
+            }
+
+            this.setCurrentCustomer(cust);
+            return { success: true, customer: cust };
+        },
+        getCurrentCustomer() {
+            const raw = localStorage.getItem("pretute_customer");
+            if (raw) {
+                try {
+                    return JSON.parse(raw);
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        },
+        setCurrentCustomer(cust) {
+            if (!cust) {
+                localStorage.removeItem("pretute_customer");
+                return;
+            }
+            const safeCust = {
+                id: cust.id,
+                name: cust.name,
+                email: cust.email,
+                phone: cust.phone,
+                address: cust.address || { street: "", city: "", state: "", pincode: "" },
+                createdAt: cust.createdAt
+            };
+            localStorage.setItem("pretute_customer", JSON.stringify(safeCust));
+            return safeCust;
+        },
+        updateCustomer(updatedData) {
+            const customers = this.getCustomers();
+            const current = this.getCurrentCustomer();
+            if (!current) return { success: false, message: "No user currently logged in" };
+
+            const index = customers.findIndex(c => c.id === current.id || c.email.toLowerCase() === current.email.toLowerCase());
+            if (index === -1) return { success: false, message: "Customer record not found" };
+
+            const existing = customers[index];
+            const updated = {
+                ...existing,
+                name: updatedData.name ? updatedData.name.trim() : existing.name,
+                phone: updatedData.phone ? updatedData.phone.trim() : existing.phone,
+                email: updatedData.email ? updatedData.email.trim().toLowerCase() : existing.email,
+                address: {
+                    ...(existing.address || {}),
+                    ...(updatedData.address || {})
+                }
+            };
+
+            if (updatedData.password) {
+                updated.password = updatedData.password;
+            }
+
+            customers[index] = updated;
+            writeData(STORAGE_KEYS.CUSTOMERS, customers);
+            this.setCurrentCustomer(updated);
+            return { success: true, customer: updated };
+        },
+        logoutCustomer() {
+            localStorage.removeItem("pretute_customer");
+            return true;
+        },
+
         // --- BACKUP & RESTORE ---
         exportDatabase() {
             return {
@@ -798,6 +995,7 @@
                 coupons: this.getCoupons(),
                 messages: this.getMessages(),
                 settings: this.getSettings(),
+                customers: this.getCustomers(),
                 exportedAt: new Date().toISOString()
             };
         },
@@ -810,6 +1008,7 @@
             if (data.coupons) writeData(STORAGE_KEYS.COUPONS, data.coupons);
             if (data.messages) writeData(STORAGE_KEYS.MESSAGES, data.messages);
             if (data.settings) writeData(STORAGE_KEYS.SETTINGS, data.settings);
+            if (data.customers) writeData(STORAGE_KEYS.CUSTOMERS, data.customers);
             return true;
         },
         resetToDefaults() {
@@ -820,6 +1019,7 @@
             writeData(STORAGE_KEYS.ORDERS, DEFAULT_ORDERS);
             writeData(STORAGE_KEYS.MESSAGES, DEFAULT_MESSAGES);
             writeData(STORAGE_KEYS.SETTINGS, DEFAULT_SETTINGS);
+            writeData(STORAGE_KEYS.CUSTOMERS, DEFAULT_CUSTOMERS);
             return true;
         }
     };

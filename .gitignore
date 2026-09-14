@@ -1,0 +1,20 @@
+# IDE & Editor files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS generated files
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.tmp
+
+# Windows duplicate copies
+* - Copy*
+*- Copy*
+* - Copy.*
+* - Copy (*).*
