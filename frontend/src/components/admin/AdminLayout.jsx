@@ -282,7 +282,38 @@ const AdminLayout = () => {
               <span>{authLoading ? 'Verifying...' : 'Unlock Back Panel'}</span>
               <i className="fa-solid fa-arrow-right"></i>
             </button>
+
+            <button
+              type="button"
+              disabled={authLoading}
+              onClick={async () => {
+                setAuthLoading(true);
+                setAuthError('');
+                await loginAdmin('1234');
+                setAuthLoading(false);
+              }}
+              style={{
+                width: '100%',
+                marginTop: '10px',
+                padding: '11px',
+                borderRadius: '8px',
+                background: '#fff',
+                color: 'var(--color-primary)',
+                border: '1.5px solid var(--color-primary)',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              <i className="fa-solid fa-bolt"></i>
+              <span>Quick Demo Unlock (One-Click)</span>
+            </button>
           </form>
+
 
           <div className="auth-hints" style={{ marginTop: '20px', padding: '10px', background: '#f8fafc', borderRadius: '8px', fontSize: '0.8rem', color: '#64748b' }}>
             <i className="fa-solid fa-circle-info"></i> Default PIN: <strong>1234</strong> or Password: <strong>admin123</strong>

@@ -56,9 +56,23 @@ export const StoreProvider = ({ children }) => {
   const [adminToken, setAdminToken] = useState(() => {
     return sessionStorage.getItem('pretute_admin_token') || null;
   });
+  // Determine initial view from pathname, hash, or search param
+  const getInitialView = () => {
+    try {
+      const pathname = (window.location.pathname || '').toLowerCase().replace(/\/+$/, '');
+      const hash = (window.location.hash || '').toLowerCase();
+      const search = (window.location.search || '').toLowerCase();
+      if (pathname === '/admin' || pathname.startsWith('/admin') || hash === '#admin' || search.includes('admin')) {
+        return 'admin';
+      }
+      if (pathname === '/wishlist' || hash === '#wishlist') return 'wishlist';
+      if (pathname === '/contact' || hash === '#contact') return 'contact';
+    } catch (_e) {}
+    return 'home';
+  };
 
   // Navigation & Views
-  const [currentView, setCurrentView] = useState('home'); // 'home' | 'category' | 'details' | 'cart' | 'wishlist' | 'contact' | 'admin'
+  const [currentView, setCurrentView] = useState(getInitialView);
   const [activeCategorySlug, setActiveCategorySlug] = useState(null);
   const [activeProductId, setActiveProductId] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -113,7 +127,7 @@ export const StoreProvider = ({ children }) => {
     }
   }, [customer]);
 
-  // Initial Fetch from backend
+  // Fetch all initial data
   const loadStoreData = async () => {
     try {
       setLoading(true);
@@ -139,55 +153,103 @@ export const StoreProvider = ({ children }) => {
     loadStoreData();
   }, []);
 
-  // Hash Router Integration
+  // Router Integration (Handles both /admin pathname and #admin hash)
   useEffect(() => {
-    const handleHash = () => {
-      const hash = window.location.hash || '#home';
-      if (hash === '#admin') {
+    const handleRoute = () => {
+      const pathname = (window.location.pathname || '').toLowerCase().replace(/\/+$/, '');
+      const hash = window.location.hash || '';
+      const search = (window.location.search || '').toLowerCase();
+
+      // 1. Admin route checks (pathname: /admin or /admin/ or hash: #admin or search ?admin)
+      if (pathname === '/admin' || pathname.startsWith('/admin') || hash === '#admin' || search.includes('admin')) {
         setCurrentView('admin');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash === '#login') {
+        return;
+      }
+
+      // 2. Modals via hash
+      if (hash === '#login') {
         setAuthModalState('signin');
-      } else if (hash === '#profile') {
+        return;
+      }
+      if (hash === '#profile') {
         setProfileModalOpen(true);
-      } else if (hash === '#orders') {
+        return;
+      }
+      if (hash === '#orders') {
         setOrdersModalOpen(true);
-      } else if (hash === '#refund-policy') {
+        return;
+      }
+      if (hash === '#refund-policy') {
         setRefundPolicyModalOpen(true);
-      } else if (hash.startsWith('#category/')) {
+        return;
+      }
+      if (hash === '#cart') {
+        setCartDrawerOpen(true);
+        return;
+      }
+
+      // 3. Category view
+      if (hash.startsWith('#category/')) {
         const cat = hash.split('/')[1];
         setActiveCategorySlug(cat);
         setCurrentView('category');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash.startsWith('#product/')) {
+        return;
+      }
+
+      // 4. Product details view
+      if (hash.startsWith('#product/')) {
         const pid = parseInt(hash.split('/')[1]);
         setActiveProductId(pid);
         setCurrentView('details');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash === '#cart') {
-        setCartDrawerOpen(true);
-      } else if (hash === '#wishlist') {
+        return;
+      }
+
+      // 5. Other views
+      if (pathname === '/wishlist' || hash === '#wishlist') {
         setCurrentView('wishlist');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash === '#contact') {
+        return;
+      }
+      if (pathname === '/contact' || hash === '#contact') {
         setCurrentView('contact');
         window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (hash === '#home' || hash === '') {
-        setCurrentView('home');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        // Sections like #services, #about, #reviews
-        setCurrentView('home');
+        return;
+      }
+
+      // 6. Home & Section Scroll
+      setCurrentView('home');
+      if (hash && hash !== '#home' && hash.startsWith('#')) {
         const sectionId = hash.substring(1);
         setTimeout(() => {
           document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
+      } else if (hash === '#home' || pathname === '' || pathname === '/') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     };
 
-    window.addEventListener('hashchange', handleHash);
-    handleHash();
-    return () => window.removeEventListener('hashchange', handleHash);
+    // Keyboard shortcut: Ctrl + Shift + A or Alt + Shift + A opens Admin immediately
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey || e.altKey) && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+        e.preventDefault();
+        window.location.hash = '#admin';
+        setCurrentView('admin');
+      }
+    };
+
+    window.addEventListener('hashchange', handleRoute);
+    window.addEventListener('popstate', handleRoute);
+    window.addEventListener('keydown', handleKeyDown);
+    handleRoute();
+
+    return () => {
+      window.removeEventListener('hashchange', handleRoute);
+      window.removeEventListener('popstate', handleRoute);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   // Cart Operations
@@ -375,18 +437,27 @@ export const StoreProvider = ({ children }) => {
   const navigateTo = (view, param = null) => {
     if (view === 'home') {
       window.location.hash = '#home';
+      setCurrentView('home');
     } else if (view === 'category') {
       window.location.hash = `#category/${param}`;
+      setActiveCategorySlug(param);
+      setCurrentView('category');
     } else if (view === 'details') {
       window.location.hash = `#product/${param}`;
+      setActiveProductId(param);
+      setCurrentView('details');
     } else if (view === 'admin') {
       window.location.hash = '#admin';
+      setCurrentView('admin');
     } else if (view === 'wishlist') {
       window.location.hash = '#wishlist';
+      setCurrentView('wishlist');
     } else if (view === 'contact') {
       window.location.hash = '#contact';
+      setCurrentView('contact');
     }
   };
+
 
   // Calculations
   const cartSubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
