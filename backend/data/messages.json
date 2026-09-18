@@ -1,0 +1,20 @@
+[
+  {
+    "id": "msg-101",
+    "date": "2026-09-05T16:20:00.000Z",
+    "name": "Ananya Iyer",
+    "email": "ananya.iyer@gmail.com",
+    "subject": "Bulk Corporate Order Inquiry",
+    "message": "Hello team, we are planning a festival gifting event for 150 employees. Can we customize the Luxury Corporate Gift Hampers with our company logo?",
+    "read": false
+  },
+  {
+    "id": "msg-102",
+    "date": "2026-09-04T10:10:00.000Z",
+    "name": "Vikas Malhotra",
+    "email": "vikas.m@yahoo.com",
+    "subject": "Resin Clock Custom Size",
+    "message": "Can I order the Ocean Breeze resin clock in a custom 24-inch diameter? Please share quotation and delivery timeline to Bengaluru.",
+    "read": true
+  }
+]

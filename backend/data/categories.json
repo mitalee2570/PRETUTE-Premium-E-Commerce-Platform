@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "slug": "baby-fashion",
+    "name": "Baby & Kids Apparel",
+    "image": "assets/prod_romper.png",
+    "description": "Organic baby clothes, rompers and cute kids outfits",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 2,
+    "slug": "wooden-toys",
+    "name": "Montessori Toys",
+    "image": "assets/prod_rainbow.png",
+    "description": "Handcrafted wooden toys, stackers and brain games",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 3,
+    "slug": "baby-gear",
+    "name": "Baby Gear & Nursery",
+    "image": "assets/prod_stroller.png",
+    "description": "Strollers, cribs and premium nursery essentials",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 4,
+    "slug": "maternity",
+    "name": "Maternity Wear",
+    "image": "assets/prod_dress.png",
+    "description": "Comfortable dresses, bump-friendly loungewear",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 5,
+    "slug": "diy-kit",
+    "name": "DIY Kit",
+    "image": "assets/DIY KIT.jpg",
+    "description": "Creative do-it-yourself craft kits for all ages",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 6,
+    "slug": "resin-art",
+    "name": "Resin Art",
+    "image": "assets/Resin Art.jpg",
+    "description": "Handcrafted glossy resin clocks, coasters and decor",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 7,
+    "slug": "candle",
+    "name": "Candle & Aromas",
+    "image": "assets/candle.jpg",
+    "description": "Scented organic soy wax candles and aroma diffusers",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 8,
+    "slug": "decorative-shop",
+    "name": "Decorative Shop",
+    "image": "assets/Decorative Shop.jpg",
+    "description": "Handmade decorative showpieces and artistic accents",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 9,
+    "slug": "corporate-gifts",
+    "name": "Corporate Gifts",
+    "image": "assets/Corporate Gifts.jpg",
+    "description": "Customized corporate gift hampers and luxury packaging",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 10,
+    "slug": "home-decor",
+    "name": "Home Decor",
+    "image": "assets/Home Decor.jpg",
+    "description": "Artisan wall hangings, table decor and craft aesthetics",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  },
+  {
+    "id": 11,
+    "slug": "treasure-keeps",
+    "name": "Treasure Keeps",
+    "image": "assets/Treasure Keeps.jpg",
+    "description": "Personalized keepsake frames and memories preservation",
+    "showOnHome": true,
+    "status": "active",
+    "availability": "available"
+  }
+]

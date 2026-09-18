@@ -1,0 +1,11 @@
+{
+  "name": "pretute-platform",
+  "version": "1.0.0",
+  "description": "PRETUTE Premium E-Commerce Platform - Fullstack React & Node.js Express",
+  "scripts": {
+    "start:backend": "cd backend && npm start",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build"
+  }
+}

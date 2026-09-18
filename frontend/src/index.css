@@ -1,0 +1,5 @@
+/* Base resets handled by style.css & admin.css */
+#root {
+  min-height: 100vh;
+  width: 100%;
+}

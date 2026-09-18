@@ -1,67 +1,117 @@
-# PRETUTE Premium E-Commerce Storefront
+# PRETUTE - Premium E-Commerce Platform
 
-A modern, highly responsive e-commerce web application for **PRETUTE** (a premium baby, kids, and maternity lifestyle brand) inspired by the layout and structural flow of FirstCry.
-
-🚀 **Live Demo Server**: Serve locally at `http://127.0.0.1:8080` or host statically on GitHub Pages.
+This project has been converted into a full-stack **React** application with separate **`backend/`** and **`frontend/`** folders, maintaining 100% of the original visual design, styles (`style.css` and `admin.css`), and functionality.
 
 ---
 
-## 🌟 Key Features
+## 📁 Project Structure
 
-1. **Hash-Based SPA Routing**: Smooth navigation transitions across Home, Categories, Product Details, Cart, Wishlist, and Contact views without page refreshes.
-2. **Interactive Carousel Banner**: Automatic slide transitions with manual dot controls.
-3. **Live Search Suggestions**: Instant drop-down search suggestions linking directly to products.
-4. **Deal Countdown Timer**: A real-time ticking flash sale countdown clock.
-5. **Product Detail Magnifier**: Coordinating lens hover zoom effect scaling details by 2.5x.
-6. **State Persistence**: Cart count, items list, and wishlist synchronized with the browser's `localStorage`.
-7. **Coupon Rules Engine**: Apply custom promotion codes:
-   - `PRETUTE20`: Flat 20% off total orders.
-   - `GEAR25`: 25% off category specific strollers/gear.
-   - `MOM15`: $15 off maternity wears with minimum purchase threshold of $80.
-   - `PLAYFREE`: Flat $10 off toys.
-8. **Contact Form Validation**: Real-time validation checks with floating labels and submit loaders.
-9. **Fully Responsive Grid**: Styled for Desktop, Tablet, Mobile, and Tiny Mobile breakpoints.
-
----
-
-## 🛠️ Technology Stack
-- **HTML5**: Semantic nodes optimized for search ranking.
-- **CSS3**: Layouts powered by CSS Grid and Flexbox with premium variables, backdrop filter blur, and custom animation keyframes.
-- **JavaScript (ES6+)**: Custom SPA state engine.
-- **Icons & Fonts**: Font Awesome Icons and Google Fonts (*Outfit* & *Playfair Display*).
-
----
-
-## 📂 Project Structure
-```text
-├── index.html        # SPA views, headers, modal, and footer structure
-├── style.css         # Typography, custom properties, and media queries
-├── app.js            # Router logic, local storage state, and interactive handlers
-├── README.md         # Project documentation
-└── assets/           # High-fidelity generated logo and storefront images
-    ├── logo.png
-    ├── hero_fashion.png
-    ├── hero_toys.png
-    ├── prod_romper.png
-    ├── prod_rainbow.png
-    ├── prod_stroller.png
-    └── prod_dress.png
+```
+PRETUTE-Premium-E-Commerce-Platform/
+├── backend/                  # Node.js + Express REST API Server
+│   ├── data/                 # JSON file-based database store
+│   │   ├── products.json
+│   │   ├── categories.json
+│   │   ├── banners.json
+│   │   ├── orders.json
+│   │   ├── coupons.json
+│   │   ├── messages.json
+│   │   ├── settings.json
+│   │   └── customers.json
+│   ├── routes/               # API endpoints
+│   │   ├── products.js
+│   │   ├── categories.js
+│   │   ├── banners.js
+│   │   ├── orders.js
+│   │   ├── coupons.js
+│   │   ├── messages.js
+│   │   ├── settings.js
+│   │   ├── customers.js
+│   │   └── admin.js
+│   ├── public/assets/        # Media assets
+│   ├── server.js             # Express Server
+│   ├── package.json
+│   └── .env
+│
+├── frontend/                 # Modern React + Vite Application
+│   ├── public/assets/        # Original product images & banners
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── common/       # Header, Navigation, Footer, Toast, Modals
+│   │   │   ├── home/         # HeroBanner, CategorySlider, FeaturedProducts, DealCountdown
+│   │   │   ├── product/      # ProductCard, CategoryView, ProductDetailModal
+│   │   │   ├── cart/         # CartDrawer
+│   │   │   ├── checkout/     # CheckoutModal
+│   │   │   ├── wishlist/     # WishlistView
+│   │   │   ├── customer/     # AuthModal, ProfileModal, OrdersModal
+│   │   │   └── admin/        # AdminLayout, Dashboard, Banners, Products, Orders, etc.
+│   │   ├── context/
+│   │   │   └── StoreContext.jsx # Global State Management
+│   │   ├── services/
+│   │   │   └── api.js        # API Client for Backend
+│   │   ├── style.css         # Original Storefront Stylesheet
+│   │   ├── admin.css         # Original Admin Panel Stylesheet
+│   │   ├── App.jsx           # Main React App with routing
+│   │   └── main.jsx
+│   ├── index.html            # Google Fonts & Font Awesome CDN
+│   ├── vite.config.js
+│   └── package.json
+│
+└── package.json              # Root scripts
 ```
 
 ---
 
-## 💻 Local Setup & Development
+## 🚀 How to Run the Project
 
-### 1. Prerequisite
-Ensure you have Node.js installed or a static web server utility.
-
-### 2. Launch Local Server
-To run the project locally, install a quick static web server:
+### 1. Start the Backend API Server:
 ```bash
-# Using Node.js http-server
-npx http-server -p 8080
-
-# Or using Python
-python -m http.server 8080
+cd backend
+npm install
+npm run dev
+# or: node server.js
 ```
-Open **[http://127.0.0.1:8080](http://127.0.0.1:8080)** in your browser.
+The Backend server runs at `http://localhost:5000`
+- Health check: `http://localhost:5000/api/health`
+- Products API: `http://localhost:5000/api/products`
+
+### 2. Start the Frontend React App:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+The Frontend app opens at `http://localhost:5173/`
+
+---
+
+## 🔐 Credentials
+
+- **Admin Back Panel**: Navigate to `http://localhost:5173/#admin` (or click "Admin Back Panel" in the account menu)
+  - Default PIN: `1234`
+  - Default Password: `admin123`
+- **Demo Customer Account**:
+  - Name: `Mitalee Maurya`
+  - Email: `mitaleemaurya@gmail.com`
+  - Phone: `8757201351`
+  - Password: `password123`
+
+---
+
+## 🍃 MongoDB Integration & User Login Logs
+
+User data and authentication logs are managed with **MongoDB & Mongoose**:
+
+- **Database Models**:
+  - `User`: Handles registration, profile, address, and credentials.
+  - `UserLog`: Tracks all user activity: `LOGIN_SUCCESS`, `LOGIN_FAILED`, `REGISTER`, and `PROFILE_UPDATE` with IP address, user agent, and timestamp.
+- **Connection**:
+  Configure your MongoDB URI in `backend/.env`:
+  ```env
+  MONGODB_URI=mongodb://127.0.0.1:27017/pretute_ecommerce
+  # Or MongoDB Atlas:
+  # MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/pretute_ecommerce
+  ```
+- **Audit Logs API Endpoint**:
+  - `GET http://localhost:5000/api/customers/logs` (Retrieve recent user login and activity audit trail).
+

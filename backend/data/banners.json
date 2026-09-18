@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "title": "Luxury Organic Wear for Little Ones",
+    "headline": "Luxury Organic Wear for Little Ones",
+    "subtitle": "Spring/Summer Collection",
+    "description": "Aesthetic pastel rompers and kids apparel hand-knit with 100% GOTS-certified organic cotton.",
+    "image": "assets/hero_fashion.png",
+    "btn1Text": "Shop Kids Fashion",
+    "btn1Link": "#category/baby-fashion",
+    "btn2Text": "Explore Maternity",
+    "btn2Link": "#category/maternity",
+    "order": 1,
+    "active": true
+  },
+  {
+    "id": 2,
+    "title": "Handcrafted Montessori Toys",
+    "headline": "Handcrafted Montessori Toys",
+    "subtitle": "Play & Grow",
+    "description": "Promote creative exploration, sensory growth, and active learning with premium toxin-free wood playsets.",
+    "image": "assets/hero_toys.png",
+    "btn1Text": "Shop Montessori Toys",
+    "btn1Link": "#category/wooden-toys",
+    "btn2Text": "View Best Sellers",
+    "btn2Link": "#home",
+    "order": 2,
+    "active": true
+  },
+  {
+    "id": 3,
+    "title": "Artisan Crafts & Home Decor",
+    "headline": "Artisan Crafts & Home Decor",
+    "subtitle": "Handmade Aesthetics",
+    "description": "Curated collection of handcrafted resin clocks, soy candles, and bohemian lifestyle accents.",
+    "image": "assets/Resin Art.jpg",
+    "btn1Text": "Explore Crafts",
+    "btn1Link": "#category/resin-art",
+    "btn2Text": "Shop Candles",
+    "btn2Link": "#category/candle",
+    "order": 3,
+    "active": true
+  }
+]

@@ -1,0 +1,302 @@
+[
+  {
+    "id": 1,
+    "title": "Organic Cotton Ribbed Romper",
+    "category": "baby-fashion",
+    "categoryLabel": "Baby & Kids Wear",
+    "image": "assets/prod_romper.png",
+    "images": [
+      "assets/prod_romper.png",
+      "assets/logo.png"
+    ],
+    "originalPrice": 1299,
+    "price": 999,
+    "discount": 23,
+    "stock": 45,
+    "rating": 4.8,
+    "reviewsCount": 42,
+    "badge": "Best Seller",
+    "shortDesc": "Made from ultra-soft GOTS-certified organic knit cotton, keeping your little bundle comfortable all day long. Features simple nickel-free snap buttons.",
+    "longDesc": "Our Organic Cotton Ribbed Romper is engineered for pure comfort. Designed to support flexible mobility and easy movements, this item features flat seams that will not irritate your child's delicate skin.",
+    "sizes": [
+      "0-3M",
+      "3-6M",
+      "6-12M",
+      "12-18M"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 2,
+    "title": "Artisan Wooden Rainbow Stacker",
+    "category": "wooden-toys",
+    "categoryLabel": "Montessori Toys",
+    "image": "assets/prod_rainbow.png",
+    "images": [
+      "assets/prod_rainbow.png",
+      "assets/logo.png"
+    ],
+    "originalPrice": 1999,
+    "price": 1599,
+    "discount": 20,
+    "stock": 28,
+    "rating": 4.9,
+    "reviewsCount": 56,
+    "badge": "Trending",
+    "shortDesc": "Aesthetic wooden rainbow stacking blocks to promote creative exploration, spatial reasoning, and hand-eye coordination.",
+    "longDesc": "Our Waldorf-inspired rainbow stacker is handcrafted from solid FSC-certified beechwood and tinted with non-toxic, water-based stains.",
+    "sizes": [
+      "Standard",
+      "Large"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 3,
+    "title": "AeroGlide Premium Stroller",
+    "category": "baby-gear",
+    "categoryLabel": "Baby Gear",
+    "image": "assets/prod_stroller.png",
+    "images": [
+      "assets/prod_stroller.png",
+      "assets/logo.png"
+    ],
+    "originalPrice": 14999,
+    "price": 11999,
+    "discount": 20,
+    "stock": 12,
+    "rating": 4.7,
+    "reviewsCount": 31,
+    "badge": "Luxury",
+    "shortDesc": "Aesthetic, ultra-lightweight travel stroller with one-hand folding, multi-position recline, and dynamic shock absorbers.",
+    "longDesc": "The AeroGlide Premium Stroller is designed for the modern family on the move. Featuring a carbon graphite chassis, it is exceptionally strong yet lightweight.",
+    "sizes": [
+      "One Size"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 4,
+    "title": "Sage Linen Maternity Dress",
+    "category": "maternity",
+    "categoryLabel": "Maternity",
+    "image": "assets/prod_dress.png",
+    "images": [
+      "assets/prod_dress.png",
+      "assets/logo.png"
+    ],
+    "originalPrice": 3499,
+    "price": 2799,
+    "discount": 20,
+    "stock": 19,
+    "rating": 4.6,
+    "reviewsCount": 19,
+    "badge": "New",
+    "shortDesc": "Breathable organic linen midi dress featuring a flexible smocked bodice and nursing-friendly concealed zippers.",
+    "longDesc": "Embrace elegance and comfort throughout pregnancy and beyond. Crafted from 100% natural, breathable European flax linen, this midi dress adjusts to your changing silhouette.",
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 5,
+    "title": "Artisan DIY Craft Starter Kit",
+    "category": "diy-kit",
+    "categoryLabel": "DIY Kit",
+    "image": "assets/DIY KIT.jpg",
+    "images": [
+      "assets/DIY KIT.jpg"
+    ],
+    "originalPrice": 1899,
+    "price": 1399,
+    "discount": 26,
+    "stock": 35,
+    "rating": 4.9,
+    "reviewsCount": 28,
+    "badge": "Hot Deal",
+    "shortDesc": "Complete all-in-one DIY kit including paints, brushes, canvas, and wooden elements for creative crafting at home.",
+    "longDesc": "Unleash creativity with this comprehensive kit packed with non-toxic art supplies, detailed guide booklet, and reusable materials.",
+    "sizes": [
+      "Standard Box"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 6,
+    "title": "Handcrafted Ocean Breeze Resin Clock",
+    "category": "resin-art",
+    "categoryLabel": "Resin Art",
+    "image": "assets/Resin Art.jpg",
+    "images": [
+      "assets/Resin Art.jpg"
+    ],
+    "originalPrice": 3999,
+    "price": 2899,
+    "discount": 27,
+    "stock": 8,
+    "rating": 5,
+    "reviewsCount": 34,
+    "badge": "Handmade",
+    "shortDesc": "Glossy ocean wave resin wall clock crafted with real gold foil and premium high-torque silent quartz clock movement.",
+    "longDesc": "Each piece is hand-poured in small batches, featuring multilayered resin ocean waves, gold numbers, and durable teakwood backing.",
+    "sizes": [
+      "12 Inch",
+      "16 Inch"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 7,
+    "title": "Organic Lavender Scented Soy Candle",
+    "category": "candle",
+    "categoryLabel": "Candle",
+    "image": "assets/candle.jpg",
+    "images": [
+      "assets/candle.jpg"
+    ],
+    "originalPrice": 999,
+    "price": 699,
+    "discount": 30,
+    "stock": 50,
+    "rating": 4.8,
+    "reviewsCount": 45,
+    "badge": "Eco-Friendly",
+    "shortDesc": "100% natural soy wax scented candle with calming French lavender, wooden crackling wick, and 45-hour clean burn time.",
+    "longDesc": "Poured in an elegant glass jar with a natural cork lid. Clean, smoke-free burn filled with pure essential oils.",
+    "sizes": [
+      "200g Jar"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 8,
+    "title": "Nordic Ceramic Flower Vase Showpiece",
+    "category": "decorative-shop",
+    "categoryLabel": "Decorative Shop",
+    "image": "assets/Decorative Shop.jpg",
+    "images": [
+      "assets/Decorative Shop.jpg"
+    ],
+    "originalPrice": 2499,
+    "price": 1799,
+    "discount": 28,
+    "stock": 14,
+    "rating": 4.7,
+    "reviewsCount": 15,
+    "badge": "Trending",
+    "shortDesc": "Matte finish ceramic donut vase, minimalist aesthetic modern home and office decoration piece.",
+    "longDesc": "Handmade by local ceramic artisans, boasting a stylish modern silhouette perfect for dried pampas grass or fresh flowers.",
+    "sizes": [
+      "Medium",
+      "Large"
+    ],
+    "featured": true,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 9,
+    "title": "Executive Luxury Corporate Gift Hamper",
+    "category": "corporate-gifts",
+    "categoryLabel": "Corporate Gifts",
+    "image": "assets/Corporate Gifts.jpg",
+    "images": [
+      "assets/Corporate Gifts.jpg"
+    ],
+    "originalPrice": 4999,
+    "price": 3899,
+    "discount": 22,
+    "stock": 20,
+    "rating": 4.9,
+    "reviewsCount": 39,
+    "badge": "Corporate",
+    "shortDesc": "Premium leather journal, metal pen, scented candle, and artisan confectionery packed in a velvet keepsake box.",
+    "longDesc": "Designed for executive gifting, client appreciation, and festive corporate events. Customizable branding available on bulk orders.",
+    "sizes": [
+      "Luxury Hamper"
+    ],
+    "featured": false,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 10,
+    "title": "Aesthetic Bohemian Wall Hanging Tapestry",
+    "category": "home-decor",
+    "categoryLabel": "Home Decor",
+    "image": "assets/Home Decor.jpg",
+    "images": [
+      "assets/Home Decor.jpg"
+    ],
+    "originalPrice": 2199,
+    "price": 1499,
+    "discount": 31,
+    "stock": 22,
+    "rating": 4.8,
+    "reviewsCount": 27,
+    "badge": "Artisan",
+    "shortDesc": "Handwoven macrame cotton rope wall hanging tapestry with natural wooden dowel and tassel detailing.",
+    "longDesc": "Infuse your living room, nursery, or bedroom with warm boho vibes. Hand-knotted from soft natural unbleached cotton rope.",
+    "sizes": [
+      "60cm x 80cm"
+    ],
+    "featured": false,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  },
+  {
+    "id": 11,
+    "title": "Customized Baby Footprint Keepsake Frame",
+    "category": "treasure-keeps",
+    "categoryLabel": "Treasure Keeps",
+    "image": "assets/Treasure Keeps.jpg",
+    "images": [
+      "assets/Treasure Keeps.jpg"
+    ],
+    "originalPrice": 2799,
+    "price": 1999,
+    "discount": 28,
+    "stock": 18,
+    "rating": 5,
+    "reviewsCount": 61,
+    "badge": "Memories",
+    "shortDesc": "Clay impression and photo wooden shadow box frame to immortalize baby handprints and footprints forever.",
+    "longDesc": "Includes non-toxic baby-safe air-dry clay, wooden styling frame, rolling pin, and acrylic transparent protection cover.",
+    "sizes": [
+      "Shadow Box Frame"
+    ],
+    "featured": false,
+    "stockStatus": "in_stock",
+    "availability": "available",
+    "status": "active"
+  }
+]

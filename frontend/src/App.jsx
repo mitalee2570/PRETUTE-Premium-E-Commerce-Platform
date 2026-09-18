@@ -1,0 +1,140 @@
+import React from 'react';
+import { useStore } from './context/StoreContext';
+
+// Common Components
+import Header from './components/common/Header';
+import Navigation from './components/common/Navigation';
+import Footer from './components/common/Footer';
+import ToastContainer from './components/common/ToastContainer';
+import RefundPolicyModal from './components/common/RefundPolicyModal';
+import ScrollNavigator from './components/common/ScrollNavigator';
+
+// Home Components
+import HeroBanner from './components/home/HeroBanner';
+import ValueProps from './components/home/ValueProps';
+import CategorySlider from './components/home/CategorySlider';
+import DealCountdown from './components/home/DealCountdown';
+import FeaturedProducts from './components/home/FeaturedProducts';
+import PhilosophySection from './components/home/PhilosophySection';
+import ReviewsSection from './components/home/ReviewsSection';
+
+// Product & Category Components
+import CategoryView from './components/product/CategoryView';
+import ProductDetailModal from './components/product/ProductDetailModal';
+
+// Contact Component
+import ContactView from './components/contact/ContactView';
+
+// Cart & Wishlist & Checkout
+import CartDrawer from './components/cart/CartDrawer';
+import CheckoutModal from './components/checkout/CheckoutModal';
+import WishlistView from './components/wishlist/WishlistView';
+
+// Customer Modals
+import CustomerAuthModal from './components/customer/CustomerAuthModal';
+import CustomerProfileModal from './components/customer/CustomerProfileModal';
+import CustomerOrdersModal from './components/customer/CustomerOrdersModal';
+
+// Admin
+import AdminLayout from './components/admin/AdminLayout';
+
+function App() {
+  const {
+    currentView,
+    activeProductId,
+    products,
+    quickViewProduct,
+    setQuickViewProduct
+  } = useStore();
+
+  // If in Admin view, render full admin dashboard
+  if (currentView === 'admin') {
+    return (
+      <div className="admin-app-root">
+        <AdminLayout />
+        <ToastContainer />
+      </div>
+    );
+  }
+
+  const selectedProduct = products.find(p => p.id === activeProductId);
+
+  return (
+    <div className="storefront-app-root">
+      {/* Sticky Header & Navigation */}
+      <Header />
+      <Navigation />
+
+      {/* Main View Router */}
+      <main className="main-content" id="mainContent">
+        {currentView === 'home' && (
+          <div id="homeView" className="page-view active" style={{ display: 'block' }}>
+            <HeroBanner />
+            <ValueProps />
+            <CategorySlider />
+            <DealCountdown />
+            <FeaturedProducts />
+            <PhilosophySection />
+            <ReviewsSection />
+          </div>
+        )}
+
+        {currentView === 'category' && (
+          <div id="categoryView" className="page-view active" style={{ display: 'block' }}>
+            <CategoryView />
+          </div>
+        )}
+
+        {currentView === 'details' && (
+          <div id="detailsView" className="page-view active" style={{ display: 'block', padding: '40px 20px' }}>
+            <ProductDetailModal product={selectedProduct} isModal={false} />
+          </div>
+        )}
+
+        {currentView === 'wishlist' && (
+          <div id="wishlistView" className="page-view active" style={{ display: 'block' }}>
+            <WishlistView />
+          </div>
+        )}
+
+        {currentView === 'contact' && (
+          <div id="contactView" className="page-view active" style={{ display: 'block' }}>
+            <ContactView />
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <Footer />
+
+      {/* Slide-out Cart Drawer */}
+      <CartDrawer />
+
+      {/* Checkout Modal */}
+      <CheckoutModal />
+
+      {/* Customer Modals */}
+      <CustomerAuthModal />
+      <CustomerProfileModal />
+      <CustomerOrdersModal />
+      <RefundPolicyModal />
+
+      {/* Quick View Product Modal */}
+      {quickViewProduct && (
+        <ProductDetailModal
+          product={quickViewProduct}
+          isModal={true}
+          onClose={() => setQuickViewProduct(null)}
+        />
+      )}
+
+      {/* Floating Scroll & Dropdown Navigator */}
+      <ScrollNavigator />
+
+      {/* Floating Notifications */}
+      <ToastContainer />
+    </div>
+  );
+}
+
+export default App;

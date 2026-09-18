@@ -1,0 +1,16 @@
+[
+  {
+    "id": "cust-1",
+    "name": "Mitalee Maurya",
+    "email": "mitaleemaurya@gmail.com",
+    "phone": "8757201351",
+    "password": "password123",
+    "createdAt": "2026-01-15T10:00:00.000Z",
+    "address": {
+      "street": "Flat 402, Lotus Orchid, Palm Beach Road",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pincode": "400705"
+    }
+  }
+]

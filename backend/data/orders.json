@@ -1,0 +1,88 @@
+[
+  {
+    "id": "PRT-984210",
+    "date": "2026-09-05T14:32:00.000Z",
+    "customerName": "Aarav Sharma",
+    "customerEmail": "aarav.sharma@example.com",
+    "customerPhone": "+91 98765 43210",
+    "address": "Flat 402, Lotus Heights, Sector 45, Gurgaon, Haryana 122003",
+    "items": [
+      {
+        "productId": 1,
+        "title": "Organic Cotton Ribbed Romper",
+        "price": 999,
+        "quantity": 2,
+        "image": "assets/prod_romper.png"
+      },
+      {
+        "productId": 7,
+        "title": "Organic Lavender Scented Soy Candle",
+        "price": 699,
+        "quantity": 1,
+        "image": "assets/candle.jpg"
+      }
+    ],
+    "subtotal": 2697,
+    "discount": 539.4,
+    "couponUsed": "PRETUTE20",
+    "total": 2157.6,
+    "paymentMethod": "Online UPI",
+    "status": "Delivered",
+    "notes": "Please leave package with building security if not available."
+  },
+  {
+    "id": "PRT-874129",
+    "date": "2026-09-06T09:15:00.000Z",
+    "customerName": "Pooja Verma",
+    "customerEmail": "pooja.v@example.com",
+    "customerPhone": "+91 98112 34567",
+    "address": "B-12, Green Park Main, New Delhi 110016",
+    "items": [
+      {
+        "productId": 3,
+        "title": "AeroGlide Premium Stroller",
+        "price": 11999,
+        "quantity": 1,
+        "image": "assets/prod_stroller.png"
+      }
+    ],
+    "subtotal": 11999,
+    "discount": 2999.75,
+    "couponUsed": "GEAR25",
+    "total": 8999.25,
+    "paymentMethod": "Credit Card",
+    "status": "Shipped",
+    "notes": "Call before delivery."
+  },
+  {
+    "id": "PRT-763914",
+    "date": "2026-09-06T11:45:00.000Z",
+    "customerName": "Rohan Kulkarni",
+    "customerEmail": "rohan.k@example.com",
+    "customerPhone": "+91 99201 88776",
+    "address": "701, Silver Crest, Bandra West, Mumbai, Maharashtra 400050",
+    "items": [
+      {
+        "productId": 6,
+        "title": "Handcrafted Ocean Breeze Resin Clock",
+        "price": 2899,
+        "quantity": 1,
+        "image": "assets/Resin Art.jpg"
+      },
+      {
+        "productId": 5,
+        "title": "Artisan DIY Craft Starter Kit",
+        "price": 1399,
+        "quantity": 1,
+        "image": "assets/DIY KIT.jpg"
+      }
+    ],
+    "subtotal": 4298,
+    "discount": 0,
+    "couponUsed": null,
+    "total": 4298,
+    "paymentMethod": "Cash on Delivery",
+    "status": "Pending",
+    "notes": "Gift packing requested."
+  }
+]
