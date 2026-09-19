@@ -8,18 +8,25 @@ const ProductCard = ({ product }) => {
   const isOutOfStock = product.stockStatus === 'out_of_stock' || product.stock <= 0;
   const imgSrc = product.image.startsWith('assets/') ? `/${product.image}` : product.image;
 
+  // Calculate discount percentage if not explicitly provided
+  const discountPercent = product.discount || (product.originalPrice && product.originalPrice > product.price
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 15);
+
+  const originalPrice = product.originalPrice || Math.round(product.price * 1.25);
+
   return (
-    <div className={`product-card ${isOutOfStock ? 'out-of-stock' : ''}`} data-id={product.id}>
+    <div className={`product-card fk-product-card ${isOutOfStock ? 'out-of-stock' : ''}`} data-id={product.id}>
       {/* Product Badges */}
       <div className="product-badges-container" style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 3, display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {product.badge && (
-          <span className="prod-badge" style={{ background: 'var(--color-primary)', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '4px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+          <span className="prod-badge" style={{ background: '#2874f0', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
             {product.badge}
           </span>
         )}
-        {product.discount > 0 && (
-          <span className="discount-badge" style={{ background: '#10B981', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '4px 8px', borderRadius: '4px' }}>
-            {product.discount}% OFF
+        {discountPercent > 0 && (
+          <span className="discount-badge" style={{ background: '#388e3c', color: '#fff', fontSize: '0.72rem', fontWeight: 700, padding: '3px 8px', borderRadius: '4px' }}>
+            {discountPercent}% OFF
           </span>
         )}
       </div>
@@ -33,11 +40,26 @@ const ProductCard = ({ product }) => {
           e.stopPropagation();
           toggleWishlist(product);
         }}
-        style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 3, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+        style={{
+          position: 'absolute',
+          top: '12px',
+          right: '12px',
+          zIndex: 3,
+          background: 'rgba(255,255,255,0.92)',
+          border: '1px solid #f1f5f9',
+          borderRadius: '50%',
+          width: '36px',
+          height: '36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)'
+        }}
       >
         <i
           className={`${isFavorited ? 'fa-solid' : 'fa-regular'} fa-heart`}
-          style={{ color: isFavorited ? '#FF5B7F' : '#4D586F', fontSize: '1rem' }}
+          style={{ color: isFavorited ? '#FF5B7F' : '#94a3b8', fontSize: '1rem' }}
         ></i>
       </button>
 
@@ -45,13 +67,13 @@ const ProductCard = ({ product }) => {
       <div
         className="prod-image-wrapper"
         onClick={() => navigateTo('details', product.id)}
-        style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden', height: '260px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        style={{ cursor: 'pointer', position: 'relative', overflow: 'hidden', height: '240px', background: '#f8fafc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
       >
         <img
           src={imgSrc}
           alt={product.title}
           loading="lazy"
-          style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '16px', transition: 'transform 0.4s ease' }}
+          style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '14px', transition: 'transform 0.4s ease' }}
         />
         <button
           type="button"
@@ -60,60 +82,104 @@ const ProductCard = ({ product }) => {
             e.stopPropagation();
             setQuickViewProduct(product);
           }}
-          style={{ position: 'absolute', bottom: '10px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(26,37,60,0.9)', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '20px', fontSize: '0.78rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', opacity: 0.9 }}
+          style={{
+            position: 'absolute',
+            bottom: '10px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'rgba(30, 41, 59, 0.9)',
+            color: '#fff',
+            border: 'none',
+            padding: '5px 14px',
+            borderRadius: '20px',
+            fontSize: '0.78rem',
+            fontWeight: 600,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer'
+          }}
         >
           <i className="fa-regular fa-eye"></i> Quick View
         </button>
       </div>
 
       {/* Product Details */}
-      <div className="prod-info" style={{ padding: '16px' }}>
-        <span className="prod-category" style={{ fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
-          {product.categoryLabel || product.category}
-        </span>
+      <div className="prod-info" style={{ padding: '14px 16px 16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+          <span className="prod-category" style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
+            {product.categoryLabel || product.category}
+          </span>
+          {/* Flipkart Assured Badge */}
+          <span className="fk-assured-tag-mini">
+            <span className="fk-f">F</span>-Assured <i className="fa-solid fa-check"></i>
+          </span>
+        </div>
+
         <h3
           className="prod-title"
           onClick={() => navigateTo('details', product.id)}
-          style={{ fontSize: '1rem', fontWeight: 600, color: '#1A253C', margin: '6px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          style={{ fontSize: '0.98rem', fontWeight: 600, color: '#0f172a', margin: '4px 0 8px 0', cursor: 'pointer', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
           title={product.title}
         >
           {product.title}
         </h3>
 
-        {/* Rating Stars */}
-        <div className="prod-rating" style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '8px' }}>
-          <div style={{ color: '#FFAE19', fontSize: '0.85rem' }}>
-            <i className="fa-solid fa-star"></i>
-          </div>
-          <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1A253C' }}>{product.rating || 4.8}</span>
-          <span style={{ fontSize: '0.78rem', color: '#999' }}>({product.reviewsCount || 24})</span>
+        {/* Rating Pill Row (Flipkart style) */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+          <span className="fk-rating-pill">
+            {product.rating || '4.8'} <i className="fa-solid fa-star"></i>
+          </span>
+          <span style={{ fontSize: '0.78rem', color: '#64748b', fontWeight: 500 }}>
+            ({product.reviewsCount || 42})
+          </span>
         </div>
 
-        {/* Pricing */}
-        <div className="prod-pricing" style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '14px' }}>
-          <span className="current-price" style={{ fontSize: '1.2rem', fontWeight: 700, color: '#FF5B7F' }}>
+        {/* Flipkart Pricing Layout */}
+        <div className="fk-card-price-row" style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
             ₹{product.price.toLocaleString()}
           </span>
-          {product.originalPrice > product.price && (
-            <span className="original-price" style={{ fontSize: '0.9rem', color: '#999', textDecoration: 'line-through' }}>
-              ₹{product.originalPrice.toLocaleString()}
+          {originalPrice > product.price && (
+            <span style={{ fontSize: '0.88rem', color: '#878787', textDecoration: 'line-through' }}>
+              ₹{originalPrice.toLocaleString()}
+            </span>
+          )}
+          {discountPercent > 0 && (
+            <span style={{ fontSize: '0.84rem', color: '#388e3c', fontWeight: 700 }}>
+              {discountPercent}% off
             </span>
           )}
         </div>
 
-        {/* Add to Bag Action */}
+        {/* Action Button */}
         <button
           type="button"
-          className="btn btn-primary add-to-cart-btn"
+          className="btn btn-primary fk-card-add-btn"
           disabled={isOutOfStock}
           onClick={(e) => {
             e.stopPropagation();
             if (!isOutOfStock) addToCart(product, product.sizes?.[0] || 'Standard', 1);
           }}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '10px', borderRadius: '8px', fontWeight: 600, cursor: isOutOfStock ? 'not-allowed' : 'pointer', background: isOutOfStock ? '#cbd5e1' : 'var(--color-primary)', border: 'none', color: '#fff' }}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            padding: '10px',
+            borderRadius: '6px',
+            fontWeight: 700,
+            fontSize: '0.9rem',
+            cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+            background: isOutOfStock ? '#cbd5e1' : '#ff9f00',
+            border: 'none',
+            color: '#fff',
+            boxShadow: '0 2px 6px rgba(255, 159, 0, 0.3)'
+          }}
         >
           <i className="fa-solid fa-bag-shopping"></i>
-          {isOutOfStock ? 'Out of Stock' : 'Add to Bag'}
+          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
         </button>
       </div>
     </div>

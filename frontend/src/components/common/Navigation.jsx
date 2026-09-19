@@ -156,7 +156,7 @@ const Navigation = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   setMobileOpen(false);
-                  setProfileModalOpen(true);
+                  navigateTo('profile');
                 }}
               >
                 <i className="fa-solid fa-id-badge"></i> {customer.name} (Profile)
@@ -182,7 +182,7 @@ const Navigation = () => {
               onClick={(e) => {
                 e.preventDefault();
                 setMobileOpen(false);
-                setOrdersModalOpen(true);
+                navigateTo('orders');
               }}
             >
               <i className="fa-solid fa-box-open"></i> My Orders

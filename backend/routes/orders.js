@@ -80,4 +80,36 @@ router.patch('/:id/status', (req, res) => {
   res.json(order);
 });
 
+// POST cancel order and restock inventory
+router.post('/:id/cancel', (req, res) => {
+  const orders = db.read('orders');
+  const order = orders.find(o => String(o.id) === String(req.params.id));
+  if (!order) {
+    return res.status(404).json({ success: false, message: 'Order not found' });
+  }
+
+  if (order.status === 'Cancelled') {
+    return res.status(400).json({ success: false, message: 'Order is already cancelled' });
+  }
+
+  order.status = 'Cancelled';
+  order.cancelledAt = new Date().toISOString();
+  db.write('orders', orders);
+
+  // Restock inventory
+  if (Array.isArray(order.items)) {
+    const products = db.read('products');
+    order.items.forEach(item => {
+      const prod = products.find(p => String(p.id) === String(item.productId));
+      if (prod) {
+        prod.stock = (prod.stock || 0) + (item.quantity || 1);
+        if (prod.stock > 0) prod.stockStatus = 'in_stock';
+      }
+    });
+    db.write('products', products);
+  }
+
+  res.json({ success: true, message: 'Order cancelled and items restocked successfully', order });
+});
+
 module.exports = router;

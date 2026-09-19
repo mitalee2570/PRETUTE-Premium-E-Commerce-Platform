@@ -1,5 +1,38 @@
 [
   {
+    "id": "PRT-968788",
+    "date": "2026-09-18T17:58:45.375Z",
+    "customerName": "Mitalee Maurya",
+    "customerEmail": "mitaleemaurya@gmail.com",
+    "customerPhone": "8757201351",
+    "address": "Flat 402, Lotus Orchid, Palm Beach Road, Opposite Sea Breeze Towers, Mumbai, Maharashtra - 400705 (HOME)",
+    "items": [
+      {
+        "productId": 1,
+        "title": "Organic Cotton Ribbed Romper",
+        "price": 999,
+        "quantity": 1,
+        "selectedSize": "0-3M",
+        "image": "assets/prod_romper.png"
+      },
+      {
+        "productId": 8,
+        "title": "Nordic Ceramic Flower Vase Showpiece",
+        "price": 1799,
+        "quantity": 1,
+        "selectedSize": "Medium",
+        "image": "assets/Decorative Shop.jpg"
+      }
+    ],
+    "subtotal": 2798,
+    "discount": 0,
+    "couponUsed": null,
+    "total": 2798,
+    "paymentMethod": "Cash on Delivery",
+    "status": "Pending",
+    "notes": "Flipkart Order - HOME Delivery"
+  },
+  {
     "id": "PRT-984210",
     "date": "2026-09-05T14:32:00.000Z",
     "customerName": "Aarav Sharma",

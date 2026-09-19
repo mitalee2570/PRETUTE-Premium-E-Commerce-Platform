@@ -8,6 +8,7 @@ import Footer from './components/common/Footer';
 import ToastContainer from './components/common/ToastContainer';
 import RefundPolicyModal from './components/common/RefundPolicyModal';
 import ScrollNavigator from './components/common/ScrollNavigator';
+import CategoryStrip from './components/common/CategoryStrip';
 
 // Home Components
 import HeroBanner from './components/home/HeroBanner';
@@ -30,10 +31,11 @@ import CartDrawer from './components/cart/CartDrawer';
 import CheckoutModal from './components/checkout/CheckoutModal';
 import WishlistView from './components/wishlist/WishlistView';
 
-// Customer Modals
+// Customer Components & Modals
 import CustomerAuthModal from './components/customer/CustomerAuthModal';
 import CustomerProfileModal from './components/customer/CustomerProfileModal';
 import CustomerOrdersModal from './components/customer/CustomerOrdersModal';
+import ProfileView from './components/customer/ProfileView';
 
 // Admin
 import AdminLayout from './components/admin/AdminLayout';
@@ -61,9 +63,10 @@ function App() {
 
   return (
     <div className="storefront-app-root">
-      {/* Sticky Header & Navigation */}
+      {/* Sticky Header & Navigation & Flipkart Category Strip */}
       <Header />
       <Navigation />
+      <CategoryStrip />
 
       {/* Main View Router */}
       <main className="main-content" id="mainContent">
@@ -100,6 +103,24 @@ function App() {
         {currentView === 'contact' && (
           <div id="contactView" className="page-view active" style={{ display: 'block' }}>
             <ContactView />
+          </div>
+        )}
+
+        {currentView === 'profile' && (
+          <div id="profileView" className="page-view active" style={{ display: 'block' }}>
+            <ProfileView initialTab="profile" />
+          </div>
+        )}
+
+        {currentView === 'orders' && (
+          <div id="ordersView" className="page-view active" style={{ display: 'block' }}>
+            <ProfileView initialTab="orders" />
+          </div>
+        )}
+
+        {currentView === 'addresses' && (
+          <div id="addressesView" className="page-view active" style={{ display: 'block' }}>
+            <ProfileView initialTab="addresses" />
           </div>
         )}
       </main>

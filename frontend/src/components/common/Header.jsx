@@ -209,7 +209,7 @@ const Header = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       setDropdownOpen(false);
-                      setProfileModalOpen(true);
+                      navigateTo('profile');
                     }}
                   >
                     <i className="fa-solid fa-id-badge"></i> My Profile & Details
@@ -220,7 +220,7 @@ const Header = () => {
                     onClick={(e) => {
                       e.preventDefault();
                       setDropdownOpen(false);
-                      setOrdersModalOpen(true);
+                      navigateTo('orders');
                     }}
                   >
                     <i className="fa-solid fa-box-open"></i> My Orders

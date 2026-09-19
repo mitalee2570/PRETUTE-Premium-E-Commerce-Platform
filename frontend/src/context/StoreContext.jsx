@@ -67,6 +67,9 @@ export const StoreProvider = ({ children }) => {
       }
       if (pathname === '/wishlist' || hash === '#wishlist') return 'wishlist';
       if (pathname === '/contact' || hash === '#contact') return 'contact';
+      if (pathname === '/profile' || hash === '#profile') return 'profile';
+      if (pathname === '/orders' || hash === '#orders') return 'orders';
+      if (pathname === '/addresses' || hash === '#addresses') return 'addresses';
     } catch (_e) {}
     return 'home';
   };
@@ -167,17 +170,24 @@ export const StoreProvider = ({ children }) => {
         return;
       }
 
-      // 2. Modals via hash
+      // 2. Modals & Pages via hash
       if (hash === '#login') {
         setAuthModalState('signin');
         return;
       }
-      if (hash === '#profile') {
-        setProfileModalOpen(true);
+      if (pathname === '/profile' || hash === '#profile') {
+        setCurrentView('profile');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
-      if (hash === '#orders') {
-        setOrdersModalOpen(true);
+      if (pathname === '/orders' || hash === '#orders') {
+        setCurrentView('orders');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      if (pathname === '/addresses' || hash === '#addresses') {
+        setCurrentView('addresses');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
       }
       if (hash === '#refund-policy') {
@@ -455,6 +465,30 @@ export const StoreProvider = ({ children }) => {
     } else if (view === 'contact') {
       window.location.hash = '#contact';
       setCurrentView('contact');
+    } else if (view === 'profile') {
+      window.location.hash = '#profile';
+      setCurrentView('profile');
+    } else if (view === 'orders') {
+      window.location.hash = '#orders';
+      setCurrentView('orders');
+    } else if (view === 'addresses') {
+      window.location.hash = '#addresses';
+      setCurrentView('addresses');
+    }
+  };
+
+  // Cancel order method
+  const cancelOrder = async (orderId) => {
+    try {
+      const res = await api.cancelOrder(orderId);
+      if (res.success) {
+        showToast('Order Cancelled', `Order #${orderId} has been cancelled.`, 'info');
+        loadStoreData();
+        return { success: true };
+      }
+    } catch (err) {
+      showToast('Cancellation Error', err.message || 'Could not cancel order', 'error');
+      return { success: false, message: err.message };
     }
   };
 
@@ -515,6 +549,7 @@ export const StoreProvider = ({ children }) => {
         registerCustomer,
         updateProfile,
         logoutCustomer,
+        cancelOrder,
         // Admin
         adminToken,
         loginAdmin,

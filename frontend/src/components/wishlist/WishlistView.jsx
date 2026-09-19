@@ -100,7 +100,7 @@ const WishlistView = () => {
                     type="button"
                     className="fk-wishlist-cart-btn"
                     onClick={() => {
-                      addToCart(prod, 1, prod.sizes ? prod.sizes[0] : 'Standard');
+                      addToCart(prod, prod.sizes ? prod.sizes[0] : 'Standard', 1);
                       toggleWishlist(prod);
                     }}
                   >

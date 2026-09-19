@@ -311,6 +311,8 @@ router.put('/:id', async (req, res) => {
       if (req.body.phone) user.phone = req.body.phone.trim();
       if (req.body.email) user.email = req.body.email.trim().toLowerCase();
       if (req.body.password) user.password = req.body.password;
+      if (req.body.gender) user.gender = req.body.gender;
+      if (req.body.addresses) user.addresses = req.body.addresses;
       if (req.body.address) {
         user.address = {
           ...(user.address?.toObject?.() || {}),
@@ -347,6 +349,8 @@ router.put('/:id', async (req, res) => {
       name: req.body.name ? req.body.name.trim() : existing.name,
       phone: req.body.phone ? req.body.phone.trim() : existing.phone,
       email: req.body.email ? req.body.email.trim().toLowerCase() : existing.email,
+      gender: req.body.gender !== undefined ? req.body.gender : (existing.gender || 'Female'),
+      addresses: req.body.addresses !== undefined ? req.body.addresses : (existing.addresses || []),
       address: {
         ...(existing.address || {}),
         ...(req.body.address || {})

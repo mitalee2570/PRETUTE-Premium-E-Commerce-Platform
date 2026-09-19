@@ -58,6 +58,7 @@ export const api = {
   getOrderById: (id) => request(`/orders/${id}`),
   createOrder: (orderData) => request('/orders', { method: 'POST', body: JSON.stringify(orderData) }),
   updateOrderStatus: (id, status) => request(`/orders/${id}/status`, { method: 'PATCH', body: JSON.stringify({ status }) }),
+  cancelOrder: (id) => request(`/orders/${id}/cancel`, { method: 'POST' }),
 
   // Coupons
   getCoupons: () => request('/coupons'),
