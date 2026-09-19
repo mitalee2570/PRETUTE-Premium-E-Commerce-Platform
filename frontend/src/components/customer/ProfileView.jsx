@@ -100,13 +100,6 @@ const ProfileView = ({ initialTab = 'profile' }) => {
     }
   }, [customer]);
 
-  // Load orders when orders tab is active
-  useEffect(() => {
-    if (activeTab === 'orders' && customer) {
-      loadCustomerOrders();
-    }
-  }, [activeTab, customer]);
-
   const loadCustomerOrders = async () => {
     setLoadingOrders(true);
     try {
@@ -133,19 +126,28 @@ const ProfileView = ({ initialTab = 'profile' }) => {
           address: 'Flat 402, Lotus Orchid, Palm Beach Road, Mumbai 400705',
           items: [
             { productId: 1, title: 'Organic Cotton Ribbed Romper', price: 999, quantity: 2, image: 'assets/prod_romper.png' },
-            { productId: 7, title: 'Organic Lavender Scented Soy Candle', price: 699, quantity: 1, image: 'assets/candle.jpg' }
+            { productId: 3, title: 'Montessori Wooden Rainbow Stacker', price: 1499, quantity: 1, image: 'assets/prod_rainbow.png' }
           ],
-          subtotal: 2697,
-          discount: 539,
-          total: 2158,
-          paymentMethod: 'Cash on Delivery',
-          status: 'Confirmed'
+          subtotal: 3497,
+          discount: 300,
+          total: 3197,
+          status: 'Shipped',
+          trackingNumber: 'DEL-9284716-IN',
+          carrier: 'BlueDart Express',
+          paymentMethod: 'Prepaid (UPI / Card)'
         }
       ]);
     } finally {
       setLoadingOrders(false);
     }
   };
+
+  // Load orders when orders tab is active
+  useEffect(() => {
+    if (activeTab === 'orders' && customer) {
+      loadCustomerOrders();
+    }
+  }, [activeTab, customer]);
 
   // 1. Personal Info Save
   const handleSavePersonalInfo = async (e) => {

@@ -52,12 +52,13 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server & Connect MongoDB
-app.listen(PORT, async () => {
+app.listen(PORT, '0.0.0.0', async () => {
   console.log(`=================================================`);
   console.log(`  🌟 PRETUTE E-Commerce API Server Started`);
   console.log(`  🚀 URL: http://localhost:${PORT}`);
   console.log(`  📡 Health: http://localhost:${PORT}/api/health`);
   console.log(`=================================================`);
+
 
   // Initialize MongoDB connection
   await connectDB();
