@@ -38,11 +38,11 @@ const DealCountdown = () => {
             <h3 className="offer-title">Storewide Luxury Fest</h3>
             <p className="offer-sub">Flat 20% off entire order. Applies to all collections.</p>
             <div className="coupon-code-box">
-              <span className="code">PRETUTE20</span>
+              <span className="code">KUAKUA20</span>
               <button
                 type="button"
                 className="copy-coupon-btn"
-                onClick={() => handleCopyCode('PRETUTE20')}
+                onClick={() => handleCopyCode('KUAKUA20')}
               >
                 APPLY
               </button>

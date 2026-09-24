@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const CategoryStrip = () => {
   const { activeCategorySlug, navigateTo, categories } = useStore();
@@ -107,7 +108,7 @@ const CategoryStrip = () => {
                 {cat.icon ? (
                   <i className={cat.icon} style={{ color: '#FF5B7F', fontSize: '1.4rem' }}></i>
                 ) : (
-                  <img src={cat.image} alt={cat.name} loading="lazy" />
+                  <img src={getAssetUrl(cat.image)} alt={cat.name} loading="lazy" />
                 )}
               </div>
               <span className="fk-cat-label">{cat.name}</span>

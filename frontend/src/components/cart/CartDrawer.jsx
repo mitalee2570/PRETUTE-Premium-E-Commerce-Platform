@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const CartDrawer = () => {
   const {
@@ -18,6 +19,9 @@ const CartDrawer = () => {
     promo,
     applyPromo,
     removePromo,
+    customer,
+    setAuthModalState,
+    setPendingPurchaseAction,
     setCheckoutModalOpen
   } = useStore();
 
@@ -48,12 +52,12 @@ const CartDrawer = () => {
       ></div>
 
       <div
-        className="cart-drawer open"
+        className="cart-drawer active open"
         id="cartDrawer"
         role="dialog"
         aria-modal="true"
         aria-label="Shopping Cart Drawer"
-        style={{ zIndex: 9991, display: 'flex', flexDirection: 'column' }}
+        style={{ zIndex: 9991, display: 'flex', flexDirection: 'column', right: 0 }}
       >
         {/* Header */}
         <div className="drawer-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #e2e8f0' }}>
@@ -107,7 +111,7 @@ const CartDrawer = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {cart.map((item) => {
-                const itemImg = item.image.startsWith('assets/') ? `/${item.image}` : item.image;
+                const itemImg = getAssetUrl(item.image);
                 return (
                   <div
                     key={`${item.id}-${item.selectedSize}`}
@@ -226,9 +230,14 @@ const CartDrawer = () => {
               className="btn btn-primary btn-block"
               onClick={() => {
                 setCartDrawerOpen(false);
-                setCheckoutModalOpen(true);
+                if (!customer) {
+                  setPendingPurchaseAction({ type: 'checkout' });
+                  setAuthModalState('signin');
+                } else {
+                  setCheckoutModalOpen(true);
+                }
               }}
-              style={{ width: '100%', padding: '12px', borderRadius: '8px', fontWeight: 700, fontSize: '1rem', background: 'var(--color-primary)', color: '#fff', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              style={{ width: '100%', padding: '12px', borderRadius: '8px', fontWeight: 700, fontSize: '1rem', background: '#ffd814', color: '#0f1111', border: '1px solid #fcd200', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', boxShadow: '0 2px 5px rgba(213,217,217,0.5)' }}
             >
               <span>Proceed to Checkout</span>
               <i className="fa-solid fa-arrow-right"></i>

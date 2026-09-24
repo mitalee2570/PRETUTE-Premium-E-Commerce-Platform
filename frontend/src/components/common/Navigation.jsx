@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 
 const Navigation = () => {
@@ -14,6 +14,12 @@ const Navigation = () => {
   } = useStore();
 
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    const handleToggle = () => setMobileOpen(prev => !prev);
+    window.addEventListener('toggle-mobile-menu', handleToggle);
+    return () => window.removeEventListener('toggle-mobile-menu', handleToggle);
+  }, []);
 
   const handleNavClick = (e, sectionId) => {
     e.preventDefault();
@@ -47,51 +53,6 @@ const Navigation = () => {
 
   return (
     <>
-      {/* Desktop Navigation Bar */}
-      <nav className="desktop-navigation" id="desktopNav">
-        <ul className="nav-links">
-          <li>
-            <a
-              href="#home"
-              className={`nav-link ${currentView === 'home' ? 'active' : ''}`}
-              onClick={(e) => handleNavClick(e, 'home')}
-            >
-              Home
-            </a>
-          </li>
-          <li>
-            <a href="#services" className="nav-link" onClick={(e) => handleNavClick(e, 'services')}>
-              Services
-            </a>
-          </li>
-          <li>
-            <a href="#about" className="nav-link" onClick={(e) => handleNavClick(e, 'about')}>
-              About
-            </a>
-          </li>
-          <li>
-            <a href="#reviews" className="nav-link" onClick={(e) => handleNavClick(e, 'reviews')}>
-              Reviews
-            </a>
-          </li>
-          <li>
-            <a href="#why-us" className="nav-link" onClick={(e) => handleNavClick(e, 'why-us')}>
-              Why Us
-            </a>
-          </li>
-          <li>
-            <a href="#contact" className="nav-link" onClick={(e) => handleNavClick(e, 'contact')}>
-              Contact
-            </a>
-          </li>
-          <li>
-            <a href="#cart" className="nav-link" onClick={(e) => handleNavClick(e, 'cart')}>
-              <i className="fa-solid fa-bag-shopping"></i> Cart
-            </a>
-          </li>
-        </ul>
-      </nav>
-
       {/* Mobile Navigation Sidebar */}
       <div
         className={`mobile-sidebar-overlay ${mobileOpen ? 'active' : ''}`}

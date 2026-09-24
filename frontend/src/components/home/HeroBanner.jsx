@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const HeroBanner = () => {
   const { banners, navigateTo } = useStore();
@@ -41,7 +42,7 @@ const HeroBanner = () => {
       <div className="carousel-container" id="heroCarousel">
         <div className="carousel-slider" id="carouselSlider">
           {activeBanners.map((banner, index) => {
-            const bgImage = banner.image.startsWith('assets/') ? `/${banner.image}` : banner.image;
+            const bgImage = getAssetUrl(banner.image);
             return (
               <div
                 key={banner.id || index}

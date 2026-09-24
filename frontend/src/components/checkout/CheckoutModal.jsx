@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import api from '../../services/api';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const CheckoutModal = () => {
   const {
@@ -50,7 +51,9 @@ const CheckoutModal = () => {
   };
 
   useEffect(() => {
-    generateCaptcha();
+    if (checkoutModalOpen) {
+      generateCaptcha();
+    }
   }, [checkoutModalOpen]);
 
   useEffect(() => {
@@ -539,7 +542,7 @@ const CheckoutModal = () => {
                 {activeStep === 3 && (
                   <div style={{ padding: '20px' }}>
                     {cart.map((item) => {
-                      const itemImg = item.image.startsWith('assets/') ? `/${item.image}` : item.image;
+                      const itemImg = getAssetUrl(item.image);
                       return (
                         <div key={`${item.id}-${item.selectedSize}`} style={{ display: 'flex', gap: '16px', padding: '14px 0', borderBottom: '1px solid #f0f0f0' }}>
                           <img src={itemImg} alt={item.title} style={{ width: '64px', height: '64px', objectFit: 'contain', background: '#f8fafc', borderRadius: '4px', padding: '4px' }} />

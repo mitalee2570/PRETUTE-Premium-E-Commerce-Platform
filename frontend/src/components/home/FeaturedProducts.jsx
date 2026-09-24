@@ -8,11 +8,11 @@ const FeaturedProducts = () => {
 
   const filterTabs = [
     { key: 'all', label: 'All Items' },
+    { key: 'diy-kit', label: 'Art & Craft Materials' },
+    { key: 'resin-art', label: 'Resin Art' },
     { key: 'baby-fashion', label: 'Baby Wear' },
     { key: 'wooden-toys', label: 'Montessori' },
-    { key: 'baby-gear', label: 'Baby Gear' },
-    { key: 'maternity', label: 'Maternity' },
-    { key: 'resin-art', label: 'Resin Art' }
+    { key: 'maternity', label: 'Maternity' }
   ];
 
   const filteredProducts = products.filter(p => {

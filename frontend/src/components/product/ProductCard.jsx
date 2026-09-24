@@ -1,12 +1,13 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const ProductCard = ({ product }) => {
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, navigateTo } = useStore();
+  const { addToCart, buyNow, toggleWishlist, isInWishlist, setQuickViewProduct, navigateTo } = useStore();
 
   const isFavorited = isInWishlist(product.id);
   const isOutOfStock = product.stockStatus === 'out_of_stock' || product.stock <= 0;
-  const imgSrc = product.image.startsWith('assets/') ? `/${product.image}` : product.image;
+  const imgSrc = getAssetUrl(product.image);
 
   // Calculate discount percentage if not explicitly provided
   const discountPercent = product.discount || (product.originalPrice && product.originalPrice > product.price
@@ -152,35 +153,62 @@ const ProductCard = ({ product }) => {
           )}
         </div>
 
-        {/* Action Button */}
-        <button
-          type="button"
-          className="btn btn-primary fk-card-add-btn"
-          disabled={isOutOfStock}
-          onClick={(e) => {
-            e.stopPropagation();
-            if (!isOutOfStock) addToCart(product, product.sizes?.[0] || 'Standard', 1);
-          }}
-          style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            padding: '10px',
-            borderRadius: '6px',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-            background: isOutOfStock ? '#cbd5e1' : '#ff9f00',
-            border: 'none',
-            color: '#fff',
-            boxShadow: '0 2px 6px rgba(255, 159, 0, 0.3)'
-          }}
-        >
-          <i className="fa-solid fa-bag-shopping"></i>
-          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+        {/* Action Buttons: Add to Cart & Buy Now */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <button
+            type="button"
+            className="btn fk-card-add-btn"
+            disabled={isOutOfStock}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isOutOfStock) addToCart(product, product.sizes?.[0] || 'Standard', 1);
+            }}
+            style={{
+              padding: '9px 8px',
+              borderRadius: '20px',
+              fontWeight: 600,
+              fontSize: '0.82rem',
+              cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+              background: isOutOfStock ? '#cbd5e1' : '#ffd814',
+              border: '1px solid #fcd200',
+              color: '#0f1111',
+              boxShadow: '0 1px 3px rgba(213,217,217,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '5px'
+            }}
+          >
+            <i className="fa-solid fa-cart-shopping"></i> Add
+          </button>
+
+          <button
+            type="button"
+            className="btn fk-card-buy-btn"
+            disabled={isOutOfStock}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (!isOutOfStock) buyNow(product, product.sizes?.[0] || 'Standard', 1);
+            }}
+            style={{
+              padding: '9px 8px',
+              borderRadius: '20px',
+              fontWeight: 600,
+              fontSize: '0.82rem',
+              cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+              background: isOutOfStock ? '#cbd5e1' : '#ffa41c',
+              border: '1px solid #ff8f00',
+              color: '#0f1111',
+              boxShadow: '0 1px 3px rgba(213,217,217,0.5)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '5px'
+            }}
+          >
+            <i className="fa-solid fa-bolt"></i> Buy Now
+          </button>
+        </div>
       </div>
     </div>
   );

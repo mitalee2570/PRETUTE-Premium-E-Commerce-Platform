@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const CategorySlider = () => {
   const { categories, navigateTo } = useStore();
@@ -14,7 +15,7 @@ const CategorySlider = () => {
         </div>
         <div className="category-scroll-container" id="categoryScrollContainer">
           {activeCategories.map((cat) => {
-            const imgSrc = cat.image.startsWith('assets/') ? `/${cat.image}` : cat.image;
+            const imgSrc = getAssetUrl(cat.image);
             return (
               <a
                 key={cat.id}

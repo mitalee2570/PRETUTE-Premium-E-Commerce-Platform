@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../../services/api';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const ContactView = () => {
   const { showToast } = useStore();
@@ -28,7 +29,7 @@ const ContactView = () => {
           phone: formData.phone || "N/A",
           subject: formData.subject,
           message: formData.message,
-          _subject: `[PRETUTE Store Inquiry] ${formData.subject} from ${formData.name}`
+          _subject: `[Kuakua Craft Inquiry] ${formData.subject} from ${formData.name}`
         })
       }).catch(console.warn);
 
@@ -42,7 +43,7 @@ const ContactView = () => {
       showToast('Message Sent!', 'Your inquiry has been forwarded to mitaleemaurya@gmail.com and recorded.', 'success');
     } catch (err) {
       setSubmitted(true);
-      showToast('Message Sent!', 'Thank you for reaching out to PRETUTE.', 'success');
+      showToast('Message Sent!', 'Thank you for reaching out to Kuakua Craft.', 'success');
     } finally {
       setLoading(false);
     }
@@ -62,7 +63,7 @@ const ContactView = () => {
   return (
     <section id="contactView" className="page-view active" style={{ display: 'block' }}>
       {/* Contact Hero Banner */}
-      <div className="contact-hero-banner" style={{ background: "linear-gradient(rgba(26, 37, 60, 0.8), rgba(26, 37, 60, 0.6)), url('/assets/hero_toys.png')", backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff', textAlign: 'center', padding: '60px 20px', marginBottom: '60px' }}>
+      <div className="contact-hero-banner" style={{ background: `linear-gradient(rgba(26, 37, 60, 0.8), rgba(26, 37, 60, 0.6)), url('${getAssetUrl('assets/hero_toys.png')}')`, backgroundSize: 'cover', backgroundPosition: 'center', color: '#fff', textAlign: 'center', padding: '60px 20px', marginBottom: '60px' }}>
         <div className="section-container">
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', marginBottom: '12px', color: '#fff' }}>Let's Connect</h1>
           <p style={{ fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto', opacity: 0.9 }}>

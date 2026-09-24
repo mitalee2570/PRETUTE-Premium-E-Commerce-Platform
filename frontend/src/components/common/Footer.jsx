@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const Footer = () => {
   const { navigateTo, setRefundPolicyModalOpen, showToast } = useStore();
@@ -10,7 +11,7 @@ const Footer = () => {
     e.preventDefault();
     if (email) {
       setSubscribed(true);
-      showToast('Subscribed!', 'Welcome to the PRETUTE Club! 15% discount code sent to your inbox.', 'success');
+      showToast('Subscribed!', 'Welcome to Kuakua Craft! 15% discount code sent to your inbox.', 'success');
       setEmail('');
       setTimeout(() => setSubscribed(false), 5000);
     }
@@ -45,14 +46,14 @@ const Footer = () => {
               }}
             >
               <img
-                src="/assets/kuakua-logo.png"
+                src={getAssetUrl('assets/kuakua-logo.png')}
                 alt="Kua Kua Crafts"
                 className="footer-brand-logo"
                 style={{ height: '60px', width: 'auto', maxWidth: 'none', objectFit: 'contain' }}
               />
             </a>
             <p className="about-text">
-              PRETUTE is a premium family lifestyle destination dedicated to organic baby & kids fashion, developmental Montessori play, modern nursery gear, and chic maternity wear.
+              Kuakua Craft is an artisan lifestyle and fine art studio dedicated to handcrafted resin art, soft pastels & drawing materials, Montessori wooden creations, scented soy candles, and custom keepsakes.
             </p>
             <div className="social-links">
               <a href="#" aria-label="Instagram"><i className="fa-brands fa-instagram"></i></a>
@@ -161,8 +162,8 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="section-container bottom-row">
-          <p className="copyright" id="footerCopyright" title="PRETUTE Store">
-            &copy; 2026 PRETUTE Premium Store. All rights reserved.
+          <p className="copyright" id="footerCopyright" title="Kuakua Craft Store">
+            &copy; 2026 Kuakua Craft. All rights reserved.
           </p>
           <div className="payment-methods">
             <i className="fa-brands fa-cc-visa"></i>

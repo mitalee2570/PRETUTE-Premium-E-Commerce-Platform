@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useStore } from '../../context/StoreContext';
 import api from '../../services/api';
 
@@ -100,7 +100,7 @@ const ProfileView = ({ initialTab = 'profile' }) => {
     }
   }, [customer]);
 
-  const loadCustomerOrders = async () => {
+  const loadCustomerOrders = useCallback(async () => {
     setLoadingOrders(true);
     try {
       const allOrders = await api.getOrders();
@@ -108,9 +108,9 @@ const ProfileView = ({ initialTab = 'profile' }) => {
         // Match customer email or phone, or show all if demo
         const userOrders = allOrders.filter(
           o =>
-            (o.customerEmail && customer.email && o.customerEmail.toLowerCase() === customer.email.toLowerCase()) ||
-            (o.customerPhone && customer.phone && o.customerPhone.includes(customer.phone)) ||
-            (customer.email === 'mitaleemaurya@gmail.com' && (o.customerName === 'Mitalee Maurya' || o.customerName === 'Aarav Sharma'))
+            (o.customerEmail && customer?.email && o.customerEmail.toLowerCase() === customer.email.toLowerCase()) ||
+            (o.customerPhone && customer?.phone && o.customerPhone.includes(customer.phone)) ||
+            (customer?.email === 'mitaleemaurya@gmail.com' && (o.customerName === 'Mitalee Maurya' || o.customerName === 'Aarav Sharma'))
         );
         setOrders(userOrders.length > 0 ? userOrders : allOrders.slice(0, 3));
       }
@@ -140,14 +140,14 @@ const ProfileView = ({ initialTab = 'profile' }) => {
     } finally {
       setLoadingOrders(false);
     }
-  };
+  }, [customer]);
 
   // Load orders when orders tab is active
   useEffect(() => {
     if (activeTab === 'orders' && customer) {
       loadCustomerOrders();
     }
-  }, [activeTab, customer]);
+  }, [activeTab, customer, loadCustomerOrders]);
 
   // 1. Personal Info Save
   const handleSavePersonalInfo = async (e) => {

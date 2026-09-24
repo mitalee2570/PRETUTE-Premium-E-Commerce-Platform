@@ -1,31 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getAssetUrl } from '../../utils/imageUrl';
 
 const ProductDetailModal = ({ product, isModal = true, onClose = null }) => {
-  const { addToCart, toggleWishlist, isInWishlist, setCartDrawerOpen, setCheckoutModalOpen } = useStore();
+  const { addToCart, buyNow, toggleWishlist, isInWishlist, products, navigateTo } = useStore();
 
   const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('desc'); // 'desc' | 'specs' | 'reviews'
-  const [pincodeInput, setPincodeInput] = useState('400705');
-  const [deliveryResult, setDeliveryResult] = useState({
-    checked: true,
-    dateStr: getEstimatedDeliveryDate(3),
-    freeDelivery: true,
-    codAvailable: true
-  });
 
-  function getEstimatedDeliveryDate(daysFromNow = 3) {
-    const d = new Date();
-    d.setDate(d.getDate() + daysFromNow);
-    const options = { weekday: 'short', month: 'short', day: 'numeric' };
-    return d.toLocaleDateString('en-IN', options);
-  }
+  // Default color palette from WordPress Coastal Tray if not specified in product
+  const defaultColors = [
+    { name: 'Blue', hex: '#2B7CD3', imgIndex: 4 },
+    { name: 'Cream', hex: '#FFFDF0', imgIndex: 2 },
+    { name: 'Green', hex: '#7CC04B', imgIndex: 0 },
+    { name: 'Orange', hex: '#E58A32', imgIndex: 0 },
+    { name: 'Red', hex: '#DE3B3B', imgIndex: 1 },
+    { name: 'Yellow', hex: '#F5E63E', imgIndex: 5 }
+  ];
+
+  const colorPalette = (product?.colors && product.colors.length > 0)
+    ? product.colors.map((c, idx) => typeof c === 'object' ? c : { name: c, hex: c.startsWith('#') ? c : '#E58A32', imgIndex: idx % 6 })
+    : defaultColors;
 
   useEffect(() => {
     if (product) {
       setActiveImgIndex(0);
+      setSelectedColor(colorPalette[3] || colorPalette[0]); // default to Orange or first
       setSelectedSize(product.sizes?.[0] || 'Standard');
       setQuantity(1);
     }
@@ -35,14 +38,19 @@ const ProductDetailModal = ({ product, isModal = true, onClose = null }) => {
 
   const isFavorited = isInWishlist(product.id);
   const isOutOfStock = product.stockStatus === 'out_of_stock' || product.stock <= 0;
-  const imageList = product.images && product.images.length > 0 ? product.images : [product.image];
+
+  // Build images list with up to 6 angles
+  const imageList = (product.images && product.images.length > 0)
+    ? product.images.slice(0, 6)
+    : [product.image];
+
   const currentImage = imageList[activeImgIndex] || product.image;
-  const imgSrc = currentImage.startsWith('assets/') ? `/${currentImage}` : currentImage;
+  const imgSrc = getAssetUrl(currentImage);
 
   const originalPrice = product.originalPrice || Math.round(product.price * 1.25);
   const discountPercent = product.discount || (originalPrice > product.price
     ? Math.round(((originalPrice - product.price) / originalPrice) * 100)
-    : 20);
+    : 26);
 
   const handleAddToCart = () => {
     if (isOutOfStock) return;
@@ -52,365 +60,625 @@ const ProductDetailModal = ({ product, isModal = true, onClose = null }) => {
 
   const handleBuyNow = () => {
     if (isOutOfStock) return;
-    addToCart(product, selectedSize, quantity);
     if (isModal && onClose) onClose();
-    setCartDrawerOpen(false);
-    setCheckoutModalOpen(true);
+    buyNow(product, selectedSize, quantity);
   };
 
-  const handlePincodeCheck = (e) => {
-    e.preventDefault();
-    if (/^\d{6}$/.test(pincodeInput.trim())) {
-      setDeliveryResult({
-        checked: true,
-        dateStr: getEstimatedDeliveryDate(3),
-        freeDelivery: true,
-        codAvailable: true
-      });
-    } else {
-      setDeliveryResult({
-        checked: false,
-        error: 'Please enter a valid 6-digit pincode'
-      });
-    }
-  };
+  // Related products from same category
+  const relatedProducts = products
+    .filter(p => p.id !== product.id && (p.category === product.category || p.categoryLabel === product.categoryLabel))
+    .slice(0, 4);
 
   const content = (
-    <div className="product-details-container fk-pdp-container" style={{ background: '#fff', borderRadius: '12px', overflow: 'hidden', maxWidth: '1080px', margin: '0 auto', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '36px', padding: '28px' }}>
-        
-        {/* Left Column: Image Gallery & Sticky Dual Buttons */}
-        <div className="fk-pdp-left">
-          <div style={{ position: 'relative', background: '#f8fafc', borderRadius: '10px', height: '380px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid #f1f5f9' }}>
-            <img
-              src={imgSrc}
-              alt={product.title}
-              style={{ maxHeight: '88%', maxWidth: '88%', objectFit: 'contain', transition: 'transform 0.3s ease' }}
-            />
-            {discountPercent > 0 && (
-              <span style={{ position: 'absolute', top: '12px', left: '12px', background: '#388e3c', color: '#fff', padding: '4px 10px', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 700 }}>
-                {discountPercent}% OFF
+    <div
+      className="wordpress-pdp-container"
+      style={{
+        background: '#ffffff',
+        borderRadius: '12px',
+        overflow: 'hidden',
+        maxWidth: '1140px',
+        margin: '0 auto',
+        padding: '30px 24px',
+        fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      }}
+    >
+      {/* Top 2-Column Product Layout matching User's WordPress Screenshot */}
+      <div
+        className="wordpress-pdp-main"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'minmax(320px, 480px) 1fr',
+          gap: '40px',
+          alignItems: 'start'
+        }}
+      >
+        {/* LEFT COLUMN: Gallery with Main Image & Up to 6 Thumbnails */}
+        <div className="pdp-gallery-column">
+          {/* Main Large Image Box */}
+          <div
+            style={{
+              position: 'relative',
+              background: '#fdfbf7',
+              borderRadius: '12px',
+              border: '1px solid #ebe8e2',
+              height: '440px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.04)'
+            }}
+          >
+            {/* Round SALE! Badge with Kua Kua Logo Icon matching screenshot */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '16px',
+                left: '16px',
+                zIndex: 3,
+                background: '#ffffff',
+                border: '1.5px solid #a7f3d0',
+                borderRadius: '50%',
+                width: '64px',
+                height: '64px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.08)'
+              }}
+            >
+              <span
+                style={{
+                  background: '#10b981',
+                  color: '#ffffff',
+                  fontSize: '0.62rem',
+                  fontWeight: 800,
+                  padding: '1px 5px',
+                  borderRadius: '3px',
+                  textTransform: 'uppercase',
+                  marginBottom: '2px',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                SALE!
               </span>
-            )}
+              <img
+                src={getAssetUrl('assets/kuakua-logo.png')}
+                alt="KuaKua"
+                style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+                onError={(e) => { e.target.style.display = 'none'; }}
+              />
+            </div>
+
+            {/* Wishlist Button */}
             <button
               type="button"
               onClick={() => toggleWishlist(product)}
-              style={{ position: 'absolute', top: '12px', right: '12px', background: '#fff', border: '1px solid #f1f5f9', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+              aria-label="Save to Wishlist"
+              style={{
+                position: 'absolute',
+                top: '16px',
+                right: '16px',
+                background: '#ffffff',
+                border: '1px solid #e2e8f0',
+                borderRadius: '50%',
+                width: '40px',
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+                zIndex: 3
+              }}
             >
-              <i className={`${isFavorited ? 'fa-solid' : 'fa-regular'} fa-heart`} style={{ color: isFavorited ? '#FF5B7F' : '#94a3b8', fontSize: '1.1rem' }}></i>
+              <i
+                className={`${isFavorited ? 'fa-solid' : 'fa-regular'} fa-heart`}
+                style={{ color: isFavorited ? '#FF5B7F' : '#94a3b8', fontSize: '1.15rem' }}
+              ></i>
             </button>
+
+            {/* Main Image */}
+            <img
+              src={imgSrc}
+              alt={product.title}
+              style={{
+                maxHeight: '88%',
+                maxWidth: '88%',
+                objectFit: 'contain',
+                transition: 'transform 0.3s ease'
+              }}
+            />
           </div>
 
-          {/* Thumbnails */}
-          {imageList.length > 1 && (
-            <div style={{ display: 'flex', gap: '10px', marginTop: '14px', overflowX: 'auto', paddingBottom: '4px' }}>
+          {/* 6 Angle Thumbnail Gallery */}
+          <div style={{ marginTop: '16px' }}>
+            <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', marginBottom: '8px', display: 'flex', justifyContent: 'space-between' }}>
+              <span>Multiple Angles &amp; Views ({imageList.length} Photos):</span>
+              <span>Click any to zoom</span>
+            </div>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, 1fr)',
+                gap: '8px'
+              }}
+            >
               {imageList.map((img, idx) => {
-                const thumbSrc = img.startsWith('assets/') ? `/${img}` : img;
+                const isActive = activeImgIndex === idx;
                 return (
                   <button
                     key={idx}
                     type="button"
                     onClick={() => setActiveImgIndex(idx)}
                     style={{
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '6px',
+                      aspectRatio: '1',
+                      width: '100%',
+                      borderRadius: '8px',
                       border: '2px solid',
-                      borderColor: activeImgIndex === idx ? '#2874f0' : '#e2e8f0',
+                      borderColor: isActive ? 'var(--color-primary, #FF5B7F)' : '#e2e8f0',
                       padding: '4px',
-                      background: '#f8fafc',
+                      background: '#ffffff',
                       cursor: 'pointer',
-                      flexShrink: 0
+                      boxShadow: isActive ? '0 0 0 2px rgba(255,91,127,0.25)' : 'none',
+                      transition: 'all 0.15s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
                     }}
                   >
-                    <img src={thumbSrc} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    <img
+                      src={getAssetUrl(img)}
+                      alt={`Angle ${idx + 1}`}
+                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                      onError={(e) => { e.target.src = 'assets/Logo.png'; }}
+                    />
                   </button>
                 );
               })}
             </div>
-          )}
-
-          {/* Flipkart Sticky Dual Action Buttons */}
-          <div className="fk-pdp-buttons" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '20px' }}>
-            <button
-              type="button"
-              className="fk-btn-cart"
-              disabled={isOutOfStock}
-              onClick={handleAddToCart}
-              style={{
-                background: '#ff9f00',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                padding: '14px 16px',
-                borderRadius: '4px',
-                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 6px rgba(255, 159, 0, 0.4)',
-                textTransform: 'uppercase'
-              }}
-            >
-              <i className="fa-solid fa-cart-shopping"></i> Add to Cart
-            </button>
-
-            <button
-              type="button"
-              className="fk-btn-buy"
-              disabled={isOutOfStock}
-              onClick={handleBuyNow}
-              style={{
-                background: '#fb641b',
-                color: '#ffffff',
-                border: 'none',
-                fontWeight: 700,
-                fontSize: '0.95rem',
-                padding: '14px 16px',
-                borderRadius: '4px',
-                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 2px 6px rgba(251, 100, 27, 0.4)',
-                textTransform: 'uppercase'
-              }}
-            >
-              <i className="fa-solid fa-bolt"></i> Buy Now
-            </button>
           </div>
         </div>
 
-        {/* Right Column: Flipkart Product Information */}
-        <div className="fk-pdp-right">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.8rem', color: '#878787', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: 600 }}>
-              {product.categoryLabel || product.category}
-            </span>
-            <span className="fk-assured-tag">
-              <span className="fk-f">F</span>-Assured <i className="fa-solid fa-check"></i>
-            </span>
-          </div>
-
-          <h1 style={{ fontSize: '1.45rem', color: '#212121', margin: '6px 0 10px 0', fontWeight: 600, lineHeight: 1.4 }}>
+        {/* RIGHT COLUMN: Product Information & Purchase Details */}
+        <div className="pdp-details-column">
+          {/* Product Title */}
+          <h1
+            style={{
+              fontSize: '2rem',
+              fontWeight: 800,
+              color: '#1A253C',
+              margin: '0 0 12px 0',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
+            }}
+          >
             {product.title}
           </h1>
 
-          {/* Flipkart Rating Row */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-            <span className="fk-rating-pill">
-              {product.rating || '4.8'} <i className="fa-solid fa-star"></i>
+          {/* Pricing Row matching Screenshot 1 */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', marginBottom: '18px' }}>
+            <span
+              style={{
+                fontSize: '1.35rem',
+                color: '#67e8f9',
+                textDecoration: 'line-through',
+                fontWeight: 600
+              }}
+            >
+              ₹{originalPrice.toFixed(2)}
             </span>
-            <span style={{ fontSize: '0.88rem', color: '#878787', fontWeight: 500 }}>
-              {product.reviewsCount || 128} Ratings & 34 Reviews
+            <span
+              style={{
+                fontSize: '2.1rem',
+                color: '#22c55e',
+                fontWeight: 800
+              }}
+            >
+              ₹{product.price.toFixed(2)}
             </span>
-          </div>
-
-          {/* Flipkart Special Price Box */}
-          <div className="fk-pdp-price-box" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '12px 16px', marginBottom: '18px' }}>
-            <div style={{ fontSize: '0.78rem', color: '#388e3c', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '4px' }}>
-              Special Price
-            </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-              <span style={{ fontSize: '1.9rem', fontWeight: 800, color: '#212121' }}>
-                ₹{product.price.toLocaleString()}
+            {discountPercent > 0 && (
+              <span
+                style={{
+                  background: '#ecfdf5',
+                  color: '#047857',
+                  padding: '3px 8px',
+                  borderRadius: '4px',
+                  fontSize: '0.8rem',
+                  fontWeight: 700
+                }}
+              >
+                SAVE {discountPercent}%
               </span>
-              {originalPrice > product.price && (
-                <span style={{ fontSize: '1.05rem', color: '#878787', textDecoration: 'line-through' }}>
-                  ₹{originalPrice.toLocaleString()}
-                </span>
-              )}
-              {discountPercent > 0 && (
-                <span style={{ fontSize: '1.05rem', color: '#388e3c', fontWeight: 700 }}>
-                  {discountPercent}% off
-                </span>
-              )}
-            </div>
-          </div>
-
-          {/* Flipkart Available Offers Card */}
-          <div className="fk-offers-card" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px 16px', marginBottom: '18px', background: '#ffffff' }}>
-            <div style={{ fontWeight: 700, fontSize: '0.9rem', color: '#212121', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <i className="fa-solid fa-tags" style={{ color: '#2874f0' }}></i> Available Offers
-            </div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.82rem', color: '#212121' }}>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <i className="fa-solid fa-tag" style={{ color: '#388e3c', marginTop: '3px' }}></i>
-                <span><strong>Bank Offer:</strong> 5% Unlimited Cashback on Flipkart Axis / HDFC Bank Credit Card <a href="#offers" onClick={(e) => e.preventDefault()} style={{ color: '#2874f0', textDecoration: 'none' }}>T&C</a></span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <i className="fa-solid fa-tag" style={{ color: '#388e3c', marginTop: '3px' }}></i>
-                <span><strong>Special Price:</strong> Get extra ₹100 off on your first order with code <code>WELCOME100</code> <a href="#offers" onClick={(e) => e.preventDefault()} style={{ color: '#2874f0', textDecoration: 'none' }}>T&C</a></span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                <i className="fa-solid fa-tag" style={{ color: '#388e3c', marginTop: '3px' }}></i>
-                <span><strong>Partner Offer:</strong> Sign-up for PRETUTE Club & get free express shipping nationwide.</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Flipkart Pincode Delivery Checker */}
-          <div className="fk-pincode-checker" style={{ border: '1px solid #e2e8f0', borderRadius: '8px', padding: '14px 16px', marginBottom: '18px', background: '#fcfdfe' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#878787' }}>Delivery</span>
-              <form onSubmit={handlePincodeCheck} style={{ display: 'flex', gap: '6px' }}>
-                <input
-                  type="text"
-                  maxLength={6}
-                  value={pincodeInput}
-                  onChange={(e) => setPincodeInput(e.target.value)}
-                  placeholder="Enter Pincode"
-                  style={{ width: '120px', padding: '6px 10px', border: '1px solid #cbd5e1', borderRadius: '4px', fontSize: '0.85rem' }}
-                />
-                <button
-                  type="submit"
-                  style={{ background: '#2874f0', color: '#fff', border: 'none', padding: '6px 14px', borderRadius: '4px', fontSize: '0.82rem', fontWeight: 600, cursor: 'pointer' }}
-                >
-                  Check
-                </button>
-              </form>
-            </div>
-
-            {deliveryResult.checked && (
-              <div style={{ fontSize: '0.84rem', color: '#212121', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <div style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <i className="fa-solid fa-truck" style={{ color: '#388e3c' }}></i>
-                  <span>Delivery by <strong>{deliveryResult.dateStr}</strong> | <span style={{ color: '#388e3c' }}>FREE</span> <del style={{ color: '#878787' }}>₹40</del></span>
-                </div>
-                <div style={{ display: 'flex', gap: '16px', marginTop: '4px', fontSize: '0.78rem', color: '#64748b' }}>
-                  <span><i className="fa-solid fa-circle-check" style={{ color: '#388e3c' }}></i> Cash on Delivery available</span>
-                  <span><i className="fa-solid fa-arrow-rotate-left" style={{ color: '#2874f0' }}></i> 7 Days Replacement</span>
-                </div>
-              </div>
-            )}
-            {deliveryResult.error && (
-              <span style={{ color: '#ef4444', fontSize: '0.8rem' }}>{deliveryResult.error}</span>
             )}
           </div>
 
-          {/* Size / Variant Selection */}
-          {product.sizes && product.sizes.length > 0 && (
-            <div style={{ marginBottom: '18px' }}>
-              <div style={{ fontSize: '0.84rem', fontWeight: 600, color: '#878787', marginBottom: '8px' }}>
-                Size: <span style={{ color: '#212121', fontWeight: 700 }}>{selectedSize}</span>
-              </div>
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                {product.sizes.map(size => (
+          {/* Short Description */}
+          <p
+            style={{
+              fontSize: '0.94rem',
+              lineHeight: 1.6,
+              color: '#475569',
+              margin: '0 0 24px 0'
+            }}
+          >
+            {product.shortDesc ||
+              "A beautifully designed starfish-inspired jewellery tray featuring a distinctive coastal shape, smooth glossy surface, and textured raised edges. Its playful yet elegant design adds a charming touch to any space."}
+          </p>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', marginBottom: '22px' }}></div>
+
+          {/* COLOUR SWATCHES Section matching Screenshot 1 */}
+          <div style={{ marginBottom: '24px' }}>
+            <div
+              style={{
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                color: '#1A253C',
+                textTransform: 'uppercase',
+                letterSpacing: '0.6px',
+                marginBottom: '10px'
+              }}
+            >
+              COLOUR: {selectedColor?.name && <span style={{ fontWeight: 600, color: '#64748b' }}>{selectedColor.name}</span>}
+            </div>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {colorPalette.map((col, idx) => {
+                const isSelected = selectedColor?.name === col.name;
+                return (
                   <button
-                    key={size}
+                    key={idx}
                     type="button"
-                    onClick={() => setSelectedSize(size)}
-                    style={{
-                      padding: '8px 16px',
-                      borderRadius: '4px',
-                      border: '1.5px solid',
-                      borderColor: selectedSize === size ? '#2874f0' : '#e2e8f0',
-                      background: selectedSize === size ? '#f0f5ff' : '#fff',
-                      color: selectedSize === size ? '#2874f0' : '#212121',
-                      fontWeight: 600,
-                      fontSize: '0.84rem',
-                      cursor: 'pointer'
+                    onClick={() => {
+                      setSelectedColor(col);
+                      if (col.imgIndex !== undefined && imageList[col.imgIndex]) {
+                        setActiveImgIndex(col.imgIndex);
+                      }
                     }}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '4px',
+                      background: col.hex,
+                      border: isSelected ? '2px solid #000' : '1px solid #cbd5e1',
+                      outline: isSelected ? '2px solid var(--color-primary, #FF5B7F)' : 'none',
+                      cursor: 'pointer',
+                      boxShadow: '0 1px 4px rgba(0,0,0,0.15)',
+                      transition: 'transform 0.15s ease'
+                    }}
+                    title={col.name}
+                  />
+                );
+              })}
             </div>
-          )}
+          </div>
 
-          {/* Highlights List */}
-          <div className="fk-highlights-box" style={{ marginBottom: '18px' }}>
-            <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#212121', marginBottom: '8px' }}>Highlights</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.84rem', color: '#212121' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="fa-solid fa-circle-check" style={{ color: '#388e3c', fontSize: '0.85rem' }}></i>
-                <span>100% Certified Organic & Non-Toxic Artisan Grade</span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="fa-solid fa-circle-check" style={{ color: '#388e3c', fontSize: '0.85rem' }}></i>
-                <span>Designed for Gentle Skin & Child Safety Standards</span>
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <i className="fa-solid fa-circle-check" style={{ color: '#388e3c', fontSize: '0.85rem' }}></i>
-                <span>Directly from Authentic Handcrafted Creators</span>
-              </li>
-            </ul>
+          {/* Quantity Counter & Add To Cart Button */}
+          <div style={{ display: 'flex', gap: '14px', alignItems: 'center', flexWrap: 'wrap', marginBottom: '26px' }}>
+            {/* Quantity Selector: [ - ] [ 1 ] [ + ] */}
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                border: '1.5px solid #cbd5e1',
+                borderRadius: '6px',
+                overflow: 'hidden',
+                background: '#ffffff'
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                style={{
+                  width: '38px',
+                  height: '42px',
+                  border: 'none',
+                  background: '#f8fafc',
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  color: '#475569',
+                  fontWeight: 600
+                }}
+              >
+                -
+              </button>
+              <span
+                style={{
+                  width: '44px',
+                  textAlign: 'center',
+                  fontWeight: 700,
+                  fontSize: '0.95rem',
+                  color: '#1A253C'
+                }}
+              >
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity(q => q + 1)}
+                style={{
+                  width: '38px',
+                  height: '42px',
+                  border: 'none',
+                  background: '#f8fafc',
+                  fontSize: '1.1rem',
+                  cursor: 'pointer',
+                  color: '#475569',
+                  fontWeight: 600
+                }}
+              >
+                +
+              </button>
+            </div>
+
+            {/* ADD TO CART Button matching Screenshot 1 */}
+            <button
+              type="button"
+              disabled={isOutOfStock}
+              onClick={handleAddToCart}
+              style={{
+                padding: '12px 32px',
+                borderRadius: '6px',
+                background: isOutOfStock ? '#94a3b8' : '#94a3b8',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 800,
+                fontSize: '0.92rem',
+                letterSpacing: '0.8px',
+                textTransform: 'uppercase',
+                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                transition: 'background 0.2s ease',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.06)'
+              }}
+              onMouseEnter={(e) => { if (!isOutOfStock) e.currentTarget.style.background = '#64748b'; }}
+              onMouseLeave={(e) => { if (!isOutOfStock) e.currentTarget.style.background = '#94a3b8'; }}
+            >
+              <i className="fa-solid fa-cart-shopping" style={{ marginRight: '8px' }}></i>
+              {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+            </button>
+
+            {/* BUY NOW Button */}
+            <button
+              type="button"
+              disabled={isOutOfStock}
+              onClick={handleBuyNow}
+              style={{
+                padding: '12px 28px',
+                borderRadius: '6px',
+                background: isOutOfStock ? '#cbd5e1' : 'var(--color-primary, #FF5B7F)',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 700,
+                fontSize: '0.92rem',
+                cursor: isOutOfStock ? 'not-allowed' : 'pointer',
+                boxShadow: '0 2px 8px rgba(255,91,127,0.3)'
+              }}
+            >
+              Buy Now
+            </button>
+          </div>
+
+          <div style={{ borderTop: '1px solid #f1f5f9', marginBottom: '18px' }}></div>
+
+          {/* Product Meta Section matching Screenshot 1 */}
+          <div style={{ fontSize: '0.86rem', display: 'flex', flexDirection: 'column', gap: '8px', color: '#475569' }}>
+            <div>
+              <strong style={{ color: '#1A253C' }}>SKU:</strong>{' '}
+              <span style={{ color: '#64748b' }}>{product.sku || 'G118'}</span>
+            </div>
+            <div>
+              <strong style={{ color: '#1A253C' }}>Categories:</strong>{' '}
+              <span style={{ color: '#64748b' }}>
+                {product.categoryLabel || product.category}, {product.subCategory || 'Gifts, Home Decor, Jewellery Jars & Trays'}
+              </span>
+            </div>
+            <div>
+              <strong style={{ color: '#1A253C' }}>Tags:</strong>{' '}
+              <span style={{ color: '#64748b' }}>
+                {Array.isArray(product.tags) && product.tags.length > 0
+                  ? product.tags.join(', ')
+                  : 'Corporate Gifts, Home Decor, Jewellery Jars & Trays'}
+              </span>
+            </div>
+            <div>
+              <strong style={{ color: '#1A253C' }}>Brand:</strong>{' '}
+              <span style={{ color: '#64748b' }}>{product.brand || 'KuaKua Craft'}</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs: Description & Specs */}
-      <div style={{ borderTop: '1px solid #f0f0f0', padding: '20px 28px' }}>
-        <div style={{ display: 'flex', gap: '24px', borderBottom: '1px solid #e2e8f0', marginBottom: '16px' }}>
-          <button
-            type="button"
-            onClick={() => setActiveTab('desc')}
-            style={{
-              padding: '8px 4px',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === 'desc' ? '2px solid #2874f0' : '2px solid transparent',
-              color: activeTab === 'desc' ? '#2874f0' : '#878787',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
-          >
-            Product Description
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('specs')}
-            style={{
-              padding: '8px 4px',
-              background: 'none',
-              border: 'none',
-              borderBottom: activeTab === 'specs' ? '2px solid #2874f0' : '2px solid transparent',
-              color: activeTab === 'specs' ? '#2874f0' : '#878787',
-              fontWeight: 700,
-              cursor: 'pointer',
-              fontSize: '0.9rem'
-            }}
-          >
-            Specifications
-          </button>
+      {/* TABS SECTION: Description & Additional Information */}
+      <div style={{ marginTop: '48px', borderTop: '1px solid #e2e8f0', paddingTop: '28px' }}>
+        <div style={{ display: 'flex', gap: '24px', borderBottom: '2px solid #f1f5f9', paddingBottom: '12px', marginBottom: '20px' }}>
+          {[
+            { id: 'desc', label: 'Description' },
+            { id: 'specs', label: 'Additional Information' },
+            { id: 'reviews', label: `Reviews (${product.reviewsCount || 12})` }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                background: 'none',
+                border: 'none',
+                fontSize: '1rem',
+                fontWeight: activeTab === tab.id ? 800 : 500,
+                color: activeTab === tab.id ? 'var(--color-primary, #FF5B7F)' : '#64748b',
+                cursor: 'pointer',
+                position: 'relative',
+                paddingBottom: '8px'
+              }}
+            >
+              {tab.label}
+              {activeTab === tab.id && (
+                <div style={{ position: 'absolute', bottom: '-14px', left: 0, right: 0, height: '3px', background: 'var(--color-primary, #FF5B7F)', borderRadius: '2px' }} />
+              )}
+            </button>
+          ))}
         </div>
 
         {activeTab === 'desc' && (
-          <p style={{ color: '#212121', fontSize: '0.88rem', lineHeight: 1.7 }}>
-            {product.longDesc || product.shortDesc}
-          </p>
+          <div style={{ color: '#475569', lineHeight: 1.7, fontSize: '0.94rem' }}>
+            <p>{product.longDesc || product.shortDesc || "Handcrafted with premium artisan materials, this tray adds an elegant charm to your home decor or vanity table."}</p>
+            <ul style={{ paddingLeft: '20px', marginTop: '12px' }}>
+              <li>Starfish-inspired organic contour styling</li>
+              <li>Glossy durable ceramic finish with textured raised bead border</li>
+              <li>Ideal for earrings, rings, necklaces, keys and vanity trinkets</li>
+              <li>Safe packaging for worry-free delivery across India</li>
+            </ul>
+          </div>
         )}
+
         {activeTab === 'specs' && (
-          <div style={{ fontSize: '0.85rem', color: '#212121', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', maxWidth: '600px' }}>
-            <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}><span style={{ color: '#878787' }}>Material:</span> 100% Organic & Non-toxic</div>
-            <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}><span style={{ color: '#878787' }}>Origin:</span> Handcrafted in India</div>
-            <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}><span style={{ color: '#878787' }}>Dispatch:</span> Within 24 Hours</div>
-            <div style={{ borderBottom: '1px solid #f1f5f9', paddingBottom: '6px' }}><span style={{ color: '#878787' }}>Warranty:</span> 1 Year Manufacturer Warranty</div>
+          <div style={{ color: '#475569', fontSize: '0.9rem' }}>
+            <table style={{ width: '100%', maxWidth: '600px', borderCollapse: 'collapse' }}>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '8px 0', fontWeight: 600, color: '#1A253C' }}>SKU</td>
+                  <td style={{ padding: '8px 0' }}>{product.sku || 'G118'}</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '8px 0', fontWeight: 600, color: '#1A253C' }}>Dimensions</td>
+                  <td style={{ padding: '8px 0' }}>15cm x 15cm x 3.5cm</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '8px 0', fontWeight: 600, color: '#1A253C' }}>Material</td>
+                  <td style={{ padding: '8px 0' }}>Fine Glazed Ceramic &amp; Beaded Border</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                  <td style={{ padding: '8px 0', fontWeight: 600, color: '#1A253C' }}>Weight</td>
+                  <td style={{ padding: '8px 0' }}>320 grams</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <div style={{ color: '#475569' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 800, color: '#1A253C' }}>5.0</div>
+              <div>
+                <div style={{ color: '#f59e0b', fontSize: '1rem' }}>
+                  <i className="fa-solid fa-star"></i>
+                  <i className="fa-solid fa-star"></i>
+                  <i className="fa-solid fa-star"></i>
+                  <i className="fa-solid fa-star"></i>
+                  <i className="fa-solid fa-star"></i>
+                </div>
+                <span style={{ fontSize: '0.8rem', color: '#64748b' }}>Based on verified customer orders</span>
+              </div>
+            </div>
+            <div style={{ background: '#f8fafc', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '10px' }}>
+              <strong>"Stunning coastal tray!"</strong>
+              <p style={{ margin: '4px 0 0 0', fontSize: '0.85rem' }}>Looked even more beautiful in person. The beaded pearl detail is pristine!</p>
+            </div>
           </div>
         )}
       </div>
+
+      {/* RELATED PRODUCTS SECTION */}
+      {relatedProducts.length > 0 && (
+        <div style={{ marginTop: '40px', borderTop: '1px solid #e2e8f0', paddingTop: '28px' }}>
+          <h3 style={{ margin: '0 0 18px 0', fontSize: '1.25rem', fontWeight: 800, color: '#1A253C' }}>
+            Related Products
+          </h3>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+            {relatedProducts.map(rp => (
+              <div
+                key={rp.id}
+                onClick={() => {
+                  if (onClose) onClose();
+                  navigateTo('details', rp.id);
+                }}
+                style={{
+                  border: '1px solid #e2e8f0',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  cursor: 'pointer',
+                  background: '#ffffff',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.06)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}
+              >
+                <div style={{ height: '140px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', background: '#f8fafc', borderRadius: '6px', marginBottom: '10px' }}>
+                  <img src={getAssetUrl(rp.image)} alt={rp.title} style={{ maxHeight: '90%', maxWidth: '90%', objectFit: 'contain' }} />
+                </div>
+                <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#1A253C', marginBottom: '4px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {rp.title}
+                </div>
+                <div style={{ color: '#22c55e', fontWeight: 700, fontSize: '0.9rem' }}>
+                  ₹{rp.price}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 
+  // If used as modal
   if (isModal) {
     return (
       <div
         className="custom-modal-overlay active"
-        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.65)', zIndex: 9999, padding: '20px', overflowY: 'auto' }}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.72)',
+          backdropFilter: 'blur(3px)',
+          zIndex: 9999,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '20px',
+          overflowY: 'auto'
+        }}
         onClick={onClose}
       >
-        <div style={{ position: 'relative', width: '100%', maxWidth: '1080px' }} onClick={(e) => e.stopPropagation()}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '1080px',
+            maxHeight: '92vh',
+            overflowY: 'auto',
+            borderRadius: '12px'
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close Button */}
           <button
             type="button"
             onClick={onClose}
-            style={{ position: 'absolute', top: '16px', right: '16px', zIndex: 10, background: '#fff', border: '1px solid #e2e8f0', borderRadius: '50%', width: '38px', height: '38px', fontSize: '1.2rem', cursor: 'pointer', boxShadow: '0 2px 8px rgba(0,0,0,0.15)' }}
+            aria-label="Close"
+            style={{
+              position: 'absolute',
+              top: '16px',
+              right: '16px',
+              zIndex: 10,
+              background: '#f1f5f9',
+              border: 'none',
+              borderRadius: '50%',
+              width: '36px',
+              height: '36px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              fontSize: '1.1rem',
+              color: '#475569'
+            }}
           >
-            &times;
+            <i className="fa-solid fa-xmark"></i>
           </button>
           {content}
         </div>
@@ -418,6 +686,7 @@ const ProductDetailModal = ({ product, isModal = true, onClose = null }) => {
     );
   }
 
+  // If used on dedicated page view
   return content;
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useStore } from './context/StoreContext';
 
 // Common Components
@@ -7,13 +7,13 @@ import Navigation from './components/common/Navigation';
 import Footer from './components/common/Footer';
 import ToastContainer from './components/common/ToastContainer';
 import RefundPolicyModal from './components/common/RefundPolicyModal';
-import ScrollNavigator from './components/common/ScrollNavigator';
 import CategoryStrip from './components/common/CategoryStrip';
 
 // Home Components
 import HeroBanner from './components/home/HeroBanner';
 import ValueProps from './components/home/ValueProps';
 import CategorySlider from './components/home/CategorySlider';
+import LatestProducts from './components/home/LatestProducts';
 import DealCountdown from './components/home/DealCountdown';
 import FeaturedProducts from './components/home/FeaturedProducts';
 import PhilosophySection from './components/home/PhilosophySection';
@@ -46,8 +46,24 @@ function App() {
     activeProductId,
     products,
     quickViewProduct,
-    setQuickViewProduct
+    setQuickViewProduct,
+    customer,
+    setAuthModalState
   } = useStore();
+
+  // 10-second timer: automatically prompts visitor to log in after 10 seconds of browsing
+  useEffect(() => {
+    if (customer) return;
+
+    const timer = setTimeout(() => {
+      const isAdminView = window.location.pathname.includes('/admin') || window.location.hash.includes('#admin');
+      if (!customer && !isAdminView) {
+        setAuthModalState('signin');
+      }
+    }, 10000); // 10 seconds
+
+    return () => clearTimeout(timer);
+  }, [customer, setAuthModalState]);
 
   // If in Admin view, render full admin dashboard
   if (currentView === 'admin') {
@@ -75,8 +91,9 @@ function App() {
             <HeroBanner />
             <ValueProps />
             <CategorySlider />
-            <DealCountdown />
+            <LatestProducts />
             <FeaturedProducts />
+            <DealCountdown />
             <PhilosophySection />
             <ReviewsSection />
           </div>
@@ -149,8 +166,6 @@ function App() {
         />
       )}
 
-      {/* Floating Scroll & Dropdown Navigator */}
-      <ScrollNavigator />
 
       {/* Floating Notifications */}
       <ToastContainer />
